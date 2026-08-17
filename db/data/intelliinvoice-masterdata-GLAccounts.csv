@@ -1,0 +1,11 @@
+code,name,description,companyCode,isActive
+610000,Office Expenses,General office supplies and administrative expenses,1000,true
+620000,Utilities,Electricity water gas and other utility expenses,1000,true
+630000,Software and Cloud Services,Software subscriptions cloud hosting and SaaS expenses,1000,true
+640000,Professional Services,Consulting legal audit and other professional service expenses,1000,true
+650000,Travel Expenses,Flights hotels transportation and business travel expenses,1000,true
+660000,Telecommunication Expenses,Internet mobile phone and communication service expenses,1000,true
+670000,Marketing Expenses,Advertising campaigns promotional services and marketing expenses,1000,true
+680000,Training and Education,Employee training certifications courses and educational expenses,1000,true
+690000,Repairs and Maintenance,Equipment building and general maintenance expenses,1000,true
+700000,Insurance Expenses,Business insurance premiums and related expenses,1000,true

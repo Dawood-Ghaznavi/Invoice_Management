@@ -1,0 +1,9 @@
+code,name,description,companyCode,isActive
+CC100,Finance,Finance accounting and treasury department,1000,true
+CC200,Information Technology,IT infrastructure software and technology operations,1000,true
+CC300,Human Resources,Human resources recruitment and employee administration,1000,true
+CC400,Operations,General business and operational activities,1000,true
+CC500,Sales,Sales and business development activities,1000,true
+CC600,Marketing,Marketing advertising and promotional activities,1000,true
+CC700,Procurement,Procurement sourcing and supplier management activities,1000,true
+CC800,Administration,Corporate administration and shared services,1000,true

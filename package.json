@@ -3,14 +3,55 @@
   "version": "1.0.0",
   "dependencies": {
     "@cap-js/hana": "^2",
-    "@sap/cds": "^9"
+    "@sap/cds": "^9",
+    "@sap-cloud-sdk/connectivity": "^4",
+    "@sap-cloud-sdk/http-client": "^4",
+    "@sap-cloud-sdk/resilience": "^4"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2.4",
-    "@sap/cds-dk": "^9"
+    "@sap/cds-dk": "^9",
+    "cds-plugin-ui5": "^0.17.0",
+    "rimraf": "^5.0.5",
+    "mbt": "^1.2.49"
   },
   "scripts": {
-    "start": "cds-serve"
+    "start": "cds-serve",
+    "watch-invmanagement": "cds watch --open invmanagement/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "undeploy": "cf undeploy Invoice_Management --delete-services --delete-service-keys --delete-service-brokers",
+    "hana": "cds deploy --to hana:intelliinv-db --auto-undeploy",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
   },
-  "private": true
+  "private": true,
+  "cds": {
+    "requires": {
+      "CE_PURCHASEORDER_0001": {
+        "kind": "odata",
+        "model": "srv/external/CE_PURCHASEORDER_0001",
+        "credentials": {
+          "url": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata4/sap/api_purchaseorder_2/srvd_a2x/sap/purchaseorder/0001",
+          "headers": {
+            "APIKey": "La0aBDZ38DP1uq6xyIqY4ObZGduwA7NL"
+          }
+        }
+      },
+      "API_MATERIAL_DOCUMENT_SRV": {
+        "kind": "odata-v2",
+        "model": "srv/external/API_MATERIAL_DOCUMENT_SRV",
+        "credentials": {
+          "url": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_MATERIAL_DOCUMENT_SRV",
+          "headers": {
+            "APIKey": "La0aBDZ38DP1uq6xyIqY4ObZGduwA7NL"
+          }
+        }
+      }
+    }
+  },
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/invmanagement"
+  ]
 }
