@@ -1,4 +1,5 @@
 using RemoteService as remoteService from '../../srv/remote-service';
+using { Attachments } from '@cap-js/attachments';
 using {
     managed, cuid
 } from '@sap/cds/common';
@@ -48,10 +49,12 @@ entity Invoices : cuid, managed {
     suggestedCostCenter        : String;
     aiConfidence               : Decimal(5,2);
     aiReason                   : LargeString;
+    attachments: Composition of many Attachments;
 }
 
 entity InvoiceItems : cuid {
     invoice     : Association to Invoices;
+    poItems     : String(5);
 
     netAmount   : Decimal(15,2);
     quantity    : Decimal(15,3);

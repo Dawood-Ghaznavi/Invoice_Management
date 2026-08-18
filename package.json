@@ -2,19 +2,20 @@
   "name": "Invoice_Management",
   "version": "1.0.0",
   "dependencies": {
+    "@cap-js/attachments": "^4.0.0",
     "@cap-js/hana": "^2",
-    "@sap/cds": "^9",
     "@sap-cloud-sdk/connectivity": "^4",
     "@sap-cloud-sdk/http-client": "^4",
     "@sap-cloud-sdk/resilience": "^4",
+    "@sap/cds": "^9",
     "@sap/xssec": "^4"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2.4",
     "@sap/cds-dk": "^9",
     "cds-plugin-ui5": "^0.17.0",
-    "rimraf": "^5.0.5",
-    "mbt": "^1.2.49"
+    "mbt": "^1.2.49",
+    "rimraf": "^5.0.5"
   },
   "scripts": {
     "start": "cds-serve",

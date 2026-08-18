@@ -52,6 +52,7 @@ annotate service.InvoiceItems with {
     ID          @UI.Hidden;
     invoice     @UI.Hidden;
 
+    poItems     @(title: 'PO Item');
     productCode @(title: 'Product Code');
     description @(title: 'Description');
     quantity    @(title: 'Quantity');
@@ -386,6 +387,11 @@ annotate service.Invoices with @(
 );
 
 annotate service.InvoiceItems with @(UI.LineItem: [
+    {
+        $Type         : 'UI.DataField',
+        Value         : poItems,
+        @UI.Importance: #High
+    },
     {
         $Type         : 'UI.DataField',
         Value         : productCode,
