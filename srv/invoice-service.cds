@@ -3,6 +3,7 @@ using { intelliinvoice.masterdata as masterdata } from '../db/schema/inv-schema'
 using { RemoteService as remoteService } from './remote-service';
 
 service InvoiceService {
+    @odata.draft.enabled
     entity Invoices as projection on invoice.Invoices;
     entity InvoiceItems as projection on invoice.InvoiceItems;
 

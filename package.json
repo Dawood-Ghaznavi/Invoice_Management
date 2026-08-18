@@ -6,7 +6,8 @@
     "@sap/cds": "^9",
     "@sap-cloud-sdk/connectivity": "^4",
     "@sap-cloud-sdk/http-client": "^4",
-    "@sap-cloud-sdk/resilience": "^4"
+    "@sap-cloud-sdk/resilience": "^4",
+    "@sap/xssec": "^4"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2.4",
@@ -30,21 +31,20 @@
         "kind": "odata",
         "model": "srv/external/CE_PURCHASEORDER_0001",
         "credentials": {
-          "url": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata4/sap/api_purchaseorder_2/srvd_a2x/sap/purchaseorder/0001",
-          "headers": {
-            "APIKey": "La0aBDZ38DP1uq6xyIqY4ObZGduwA7NL"
-          }
+          "path": "/sap/opu/odata4/sap/api_purchaseorder_2/srvd_a2x/sap/purchaseorder/0001",
+          "destination": "Business_Hub"
         }
       },
       "API_MATERIAL_DOCUMENT_SRV": {
         "kind": "odata-v2",
         "model": "srv/external/API_MATERIAL_DOCUMENT_SRV",
         "credentials": {
-          "url": "https://sandbox.api.sap.com/s4hanacloud/sap/opu/odata/sap/API_MATERIAL_DOCUMENT_SRV",
-          "headers": {
-            "APIKey": "La0aBDZ38DP1uq6xyIqY4ObZGduwA7NL"
-          }
+          "path": "/sap/opu/odata/sap/API_MATERIAL_DOCUMENT_SRV",
+          "destination": "Business_Hub"
         }
+      },
+      "[production]": {
+        "auth": "xsuaa"
       }
     }
   },

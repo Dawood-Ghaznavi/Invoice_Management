@@ -2,6 +2,13 @@
   "welcomeFile": "/index.html",
   "authenticationMethod": "route",
   "routes": [
+      {
+      "source": "^/odata/v4/invoice/(.*)$",
+      "target": "/odata/v4/invoice/$1",
+      "destination": "Invoice_Management-destination-service",
+      "authenticationType": "xsuaa",
+      "csrfProtection": false
+    },
     {
       "source": "^/resources/(.*)$",
       "target": "/resources/$1",
