@@ -19,15 +19,18 @@
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-invmanagement": "cds watch --open invmanagement/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-invmanagement": "cds bind --exec --profile hybrid -- cds watch --open invmanagement/index.html?sap-ui-xx-viewCache=false --livereload false",
     "undeploy": "cf undeploy Invoice_Management --delete-services --delete-service-keys --delete-service-brokers",
-    "hana": "cds deploy --to hana:intelliinv-db --auto-undeploy",
+    "hana": "cds deploy --to hana:Invoice_Management-db --auto-undeploy",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1"
   },
   "private": true,
   "cds": {
     "requires": {
+      "db": {
+        "kind": "hana"
+      },
       "CE_PURCHASEORDER_0001": {
         "kind": "odata",
         "model": "srv/external/CE_PURCHASEORDER_0001",

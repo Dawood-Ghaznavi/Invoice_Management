@@ -1,0 +1,12 @@
+TRIGGER Invoice BEFORE
+    INSERT
+    ON  InvoiceService_Invoices_DRAFTS REFERENCING NEW ROW MYNEWROW FOR EACH ROW
+        BEGIN
+            DECLARE TH_No INTEGER;
+
+            IF :MYNEWROW.reqNumber IS NULL THEN
+                SELECT "invoice_reqNumber".nextval INTO TH_No
+                FROM DUMMY;
+                MYNEWROW.reqNumber = :TH_No;           
+            END IF;
+          END;  

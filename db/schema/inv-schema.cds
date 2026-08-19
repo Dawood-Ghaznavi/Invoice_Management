@@ -19,6 +19,7 @@ type InvoiceStatus : String enum {
     
 
 entity Invoices : cuid, managed {
+    reqNumber                  : String;
     documentNumber             : String;
     documentDate               : Date;
     dueDate                    : Date;
