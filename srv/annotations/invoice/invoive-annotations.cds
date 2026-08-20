@@ -64,10 +64,6 @@ annotate service.InvoiceItems with {
         title               : 'Net Amount',
         Measures.ISOCurrency: invoice.currency
     );
-    taxAmount   @(
-        title               : 'Tax Amount',
-        Measures.ISOCurrency: invoice.currency
-    );
 }
 
 // =============================================================================
@@ -147,6 +143,15 @@ annotate service.Invoices with @(
     },
     UI.Identification: [
         {
+            $Type     : 'UI.DataFieldForAction',
+            Label     : 'Extract',
+            Action    : 'InvoiceService.extract',
+            ![@UI.Hidden]: {$edmJson: {$Eq: [
+                        {$Path: 'IsActiveEntity'},
+                        true
+                    ]}}
+        },
+        {
             $Type: 'UI.DataField',
             Value: documentNumber
         },
@@ -217,7 +222,11 @@ annotate service.Invoices with @(
             $Type : 'UI.ReferenceFacet',
             ID    : 'AdministrativeData',
             Label : 'Administrative Data',
-            Target: '@UI.FieldGroup#AdministrativeData'
+            Target: '@UI.FieldGroup#AdministrativeData',
+            ![@UI.Hidden]: {$edmJson: {$Ne: [
+                        {$Path: 'IsActiveEntity'},
+                        true
+                    ]}}
         }
     ],
     UI.FieldGroup #GeneralInformation      : {
@@ -416,10 +425,5 @@ annotate service.InvoiceItems with @(UI.LineItem: [
         $Type         : 'UI.DataField',
         Value         : netAmount,
         @UI.Importance: #High
-    },
-    {
-        $Type         : 'UI.DataField',
-        Value         : taxAmount,
-        @UI.Importance: #Medium
     }
 ]);

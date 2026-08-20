@@ -62,7 +62,6 @@ entity InvoiceItems : cuid {
     unitPrice   : Decimal(15,2);
     productCode : String;
     description : String;
-    taxAmount   : Decimal(15,2);
 }
 }
 

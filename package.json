@@ -8,7 +8,8 @@
     "@sap-cloud-sdk/http-client": "^4",
     "@sap-cloud-sdk/resilience": "^4",
     "@sap/cds": "^9",
-    "@sap/xssec": "^4"
+    "@sap/xssec": "^4",
+    "form-data": "^4.0.6"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^2.4",
@@ -45,6 +46,13 @@
         "credentials": {
           "path": "/sap/opu/odata/sap/API_MATERIAL_DOCUMENT_SRV",
           "destination": "Business_Hub"
+        }
+      },
+      "Document": {
+        "kind": "rest",
+        "credentials": {
+          "destination": "Document",
+          "requestTimeout": 30000
         }
       },
       "[production]": {

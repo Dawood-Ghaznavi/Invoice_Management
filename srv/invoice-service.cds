@@ -4,7 +4,9 @@ using { RemoteService as remoteService } from './remote-service';
 
 service InvoiceService {
     @odata.draft.enabled
-    entity Invoices as projection on invoice.Invoices;
+    entity Invoices as projection on invoice.Invoices actions {
+        action extract();
+    };
     entity InvoiceItems as projection on invoice.InvoiceItems;
 
     entity GLAccounts as projection on masterdata.GLAccounts;
