@@ -32,6 +32,28 @@ module.exports = async function () {
 
     const Attachments = this.entities['Invoices.attachments'];
 
+    this.before('PATCH', Invoices.drafts, req => {
+        if (!Object.prototype.hasOwnProperty.call(req.data, 'purchaseOrder_purchaseOrder')) {
+            delete req.data.processingType;
+            return;
+        }
+
+        const purchaseOrderNumber = req.data.purchaseOrder_purchaseOrder?.trim();
+        req.data.purchaseOrder_purchaseOrder = purchaseOrderNumber || null;
+        req.data.processingType = purchaseOrderNumber ? 'PO' : 'NON_PO';
+    });
+
+    this.before(['CREATE', 'UPDATE'], Invoices, req => {
+        if (!Object.prototype.hasOwnProperty.call(req.data, 'purchaseOrder_purchaseOrder')) {
+            delete req.data.processingType;
+            return;
+        }
+
+        const purchaseOrderNumber = req.data.purchaseOrder_purchaseOrder?.trim();
+        req.data.purchaseOrder_purchaseOrder = purchaseOrderNumber || null;
+        req.data.processingType = purchaseOrderNumber ? 'PO' : 'NON_PO';
+    });
+
     this.on('extract', Invoices.drafts, async req => {
         const { ID } = req.params[0];
         const attachments = await SELECT.from(Attachments.drafts)
@@ -131,8 +153,8 @@ module.exports = async function () {
             senderName: headerFields.senderName,
             senderAddress: headerFields.senderAddress,
             invoicingParty: headerFields.invoicingParty,
-            purchaseOrder_purchaseOrder: headerFields.purchaseOrderNumber || null,
-            processingType: headerFields.purchaseOrderNumber ? 'PO' : 'NON_PO'
+            purchaseOrder_purchaseOrder: headerFields.purchaseOrderNumber?.trim() || null,
+            processingType: headerFields.purchaseOrderNumber?.trim() ? 'PO' : 'NON_PO'
         };
 
         for (const field in invoiceData) {
@@ -145,10 +167,10 @@ module.exports = async function () {
         await DELETE.from(InvoiceItems.drafts).where({ invoice_ID: ID });
 console.log(" *** " , lineItems)
         if (lineItems.length) {
-            await INSERT.into(InvoiceItems.drafts).entries(lineItems.map(lineItem => ({
+            await INSERT.into(InvoiceItems.drafts).entries(lineItems.map((lineItem, index) => ({
                 ID: cds.utils.uuid(),
                 invoice_ID: ID,
-                poItems: lineItem.purchaseOrderItemNumber,
+                poItems: String((index + 1) * 10).padStart(4, '0'),
                 netAmount: lineItem.netAmount,
                 quantity: lineItem.quantity,
                 unitPrice: lineItem.unitPrice,
@@ -162,6 +184,41 @@ console.log(" *** " , lineItems)
         }
 
         req.notify('Invoice extracted successfully');
+    });
+
+    this.on('submit', Invoices, async req => {
+        const { ID } = req.params[0];
+        const invoice = await SELECT.one.from(Invoices)
+            .columns('status', 'processingType', 'purchaseOrder_purchaseOrder')
+            .where({ ID });
+
+        if (!invoice) {
+            return req.error({ message: 'Invoice not found', status: 404 });
+        }
+
+        if (invoice.status !== 'DRAFT') {
+            return req.error({ message: 'Only draft invoices can be submitted', status: 400 });
+        }
+
+        if (invoice.processingType !== 'PO' || !invoice.purchaseOrder_purchaseOrder) {
+            return req.error({ message: 'A Purchase Order is required before submitting a PO invoice', status: 400 });
+        }
+
+        const purchaseOrder = await purchaseOrderService.tx(req).run(
+            SELECT.one.from(PurchaseOrder)
+                .columns('purchaseOrder')
+                .where({ purchaseOrder: invoice.purchaseOrder_purchaseOrder })
+        );
+
+        if (!purchaseOrder) {
+            return req.error({
+                message: `Purchase Order ${invoice.purchaseOrder_purchaseOrder} was not found`,
+                status: 400
+            });
+        }
+
+        await UPDATE(Invoices).set({ status: 'IN_APPROVAL' }).where({ ID });
+        req.notify('Invoice submitted for approval');
     });
 
     this.on('READ', [Invoices.drafts , Invoices], async (req, next) => {

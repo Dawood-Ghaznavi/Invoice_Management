@@ -33,8 +33,10 @@ annotate service.Invoices with {
     costCenter                 @(title: 'Cost Center');
     items                      @(title: 'Invoice Items');
 
-    processingType             @(title: 'Processing Type');
-    matchResult                @(title: 'Match Result');
+    processingType             @(
+        title              : 'Processing Type',
+        Common.FieldControl: #ReadOnly
+    );
     status                     @(title: 'Status');
 
     suggestedGLAccount         @(title: 'Suggested G/L Account');
@@ -113,11 +115,6 @@ annotate service.Invoices with @(
         },
         {
             $Type         : 'UI.DataField',
-            Value         : matchResult,
-            @UI.Importance: #High
-        },
-        {
-            $Type         : 'UI.DataField',
             Value         : status,
             @UI.Importance: #High
         }
@@ -150,6 +147,12 @@ annotate service.Invoices with @(
                         {$Path: 'IsActiveEntity'},
                         true
                     ]}}
+        },
+        {
+            $Type     : 'UI.DataFieldForAction',
+            Label     : 'Submit',
+            Action    : 'InvoiceService.submit',
+            ![@UI.Hidden]: (processingType != 'PO' or status != 'DRAFT' or $draft.IsActiveEntity == false)
         },
         {
             $Type: 'UI.DataField',
@@ -202,21 +205,17 @@ annotate service.Invoices with @(
         },
         {
             $Type : 'UI.ReferenceFacet',
-            ID    : 'PurchaseOrderVerification',
-            Label : 'Purchase Order Verification',
-            Target: '@UI.FieldGroup#PurchaseOrderVerification'
-        },
-        {
-            $Type : 'UI.ReferenceFacet',
             ID    : 'AccountingAssignment',
             Label : 'Accounting Assignment',
-            Target: '@UI.FieldGroup#AccountingAssignment'
+            Target: '@UI.FieldGroup#AccountingAssignment',
+            ![@UI.Hidden]: (processingType != 'NON_PO')
         },
         {
             $Type : 'UI.ReferenceFacet',
             ID    : 'AIRecommendation',
             Label : 'AI Recommendation',
-            Target: '@UI.FieldGroup#AIRecommendation'
+            Target: '@UI.FieldGroup#AIRecommendation',
+            ![@UI.Hidden]: (processingType != 'NON_PO' or aiConfidence == null)
         },
         {
             $Type : 'UI.ReferenceFacet',
@@ -258,6 +257,11 @@ annotate service.Invoices with @(
             },
             {
                 $Type: 'UI.DataField',
+                Value: purchaseOrder_purchaseOrder,
+                Label: 'Purchase Order'
+            },
+            {
+                $Type: 'UI.DataField',
                 Value: currency
             }
         ]
@@ -288,41 +292,7 @@ annotate service.Invoices with @(
             },
             {
                 $Type: 'UI.DataField',
-                Value: matchResult
-            },
-            {
-                $Type: 'UI.DataField',
                 Value: status
-            }
-        ]
-    },
-    UI.FieldGroup #PurchaseOrderVerification: {
-        $Type: 'UI.FieldGroupType',
-        Data : [
-            {
-                $Type: 'UI.DataField',
-                Value: purchaseOrder.purchaseOrder,
-                Label: 'Purchase Order'
-            },
-            {
-                $Type: 'UI.DataField',
-                Value: purchaseOrder.purchaseOrderDate,
-                Label: 'Purchase Order Date'
-            },
-            {
-                $Type: 'UI.DataField',
-                Value: purchaseOrder.supplier,
-                Label: 'PO Supplier'
-            },
-            {
-                $Type: 'UI.DataField',
-                Value: purchaseOrder.companyCode,
-                Label: 'Company Code'
-            },
-            {
-                $Type: 'UI.DataField',
-                Value: purchaseOrder.documentCurrency,
-                Label: 'PO Currency'
             }
         ]
     },
@@ -394,6 +364,17 @@ annotate service.Invoices with @(
         ]
     }
 );
+
+annotate service.Invoices with @Common.SideEffects #ProcessingTypeFromPurchaseOrder: {
+    SourceProperties: [purchaseOrder_purchaseOrder],
+    TargetProperties: ['processingType']
+};
+
+annotate service.Invoices with actions {
+    submit @(Common.SideEffects: {
+        TargetProperties: ['in/status']
+    });
+};
 
 annotate service.InvoiceItems with @(UI.LineItem: [
     {

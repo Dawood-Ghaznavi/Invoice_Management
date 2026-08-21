@@ -16,6 +16,11 @@ type InvoiceStatus : String enum {
     REJECTED;
     POSTED;
 }
+
+type ProcessingType : String enum {
+    PO;
+    NON_PO;
+}
     
 
 entity Invoices : cuid, managed {
@@ -42,8 +47,7 @@ entity Invoices : cuid, managed {
         on items.invoice = $self;
 
     // App-specific fields
-    processingType             : String;   // PO / NON_PO
-    matchResult                : String;
+    processingType             : ProcessingType;
     status                     : InvoiceStatus default #DRAFT;
 
     suggestedGLAccount         : String;
