@@ -130,15 +130,31 @@ annotate service.Invoices with @(
     UI.HeaderInfo     : {
         TypeName      : 'Invoice',
         TypeNamePlural: 'Invoices',
-        Title         : {
-            $Type: 'UI.DataField',
-            Value: documentNumber
-        },
-        Description   : {
-            $Type: 'UI.DataField',
-            Value: senderName
-        }
+        Title         : {Value: senderName},
+        Description   : {Value: senderAddress },
+        TypeImageUrl  : 'sap-icon://receipt'
+        
     },
+    UI.HeaderFacets   : [
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID    : 'InvoiceNumberHeaderFacet',
+            Label : 'Invoice Number',
+            Target: '@UI.FieldGroup#InvoiceNumberHeader'
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID    : 'StatusHeaderFacet',
+            Label : 'Status',
+            Target: '@UI.FieldGroup#StatusHeader'
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID    : 'ProcessingTypeHeaderFacet',
+            Label : 'Processing Type',
+            Target: '@UI.FieldGroup#ProcessingTypeHeader'
+        }
+    ],
     UI.Identification: [
         {
             $Type     : 'UI.DataFieldForAction',
@@ -163,10 +179,6 @@ annotate service.Invoices with @(
         {
             $Type: 'UI.DataField',
             Value: grossAmount
-        },
-        {
-            $Type: 'UI.DataField',
-            Value: status
         }
     ],
     UI.Facets        : [
@@ -186,12 +198,6 @@ annotate service.Invoices with @(
                     ID    : 'Amounts',
                     Label : 'Amounts',
                     Target: '@UI.FieldGroup#Amounts'
-                },
-                {
-                    $Type : 'UI.ReferenceFacet',
-                    ID    : 'Processing',
-                    Label : 'Processing',
-                    Target: '@UI.FieldGroup#Processing'
                 }
             ]
         },
@@ -219,6 +225,30 @@ annotate service.Invoices with @(
                     ]}}
         }
     ],
+    UI.FieldGroup #InvoiceNumberHeader     : {
+        $Type: 'UI.FieldGroupType',
+        Data : [{
+            $Type: 'UI.DataField',
+            Value: documentNumber,
+            Label: ''
+        }]
+    },
+    UI.FieldGroup #StatusHeader            : {
+        $Type: 'UI.FieldGroupType',
+        Data : [{
+            $Type: 'UI.DataField',
+            Value: status,
+            Label: ''
+        }]
+    },
+    UI.FieldGroup #ProcessingTypeHeader    : {
+        $Type: 'UI.FieldGroupType',
+        Data : [{
+            $Type: 'UI.DataField',
+            Value: processingType,
+            Label: ''
+        }]
+    },
     UI.FieldGroup #GeneralInformation      : {
         $Type: 'UI.FieldGroupType',
         Data : [
@@ -271,19 +301,6 @@ annotate service.Invoices with @(
             {
                 $Type: 'UI.DataField',
                 Value: grossAmount
-            }
-        ]
-    },
-    UI.FieldGroup #Processing              : {
-        $Type: 'UI.FieldGroupType',
-        Data : [
-            {
-                $Type: 'UI.DataField',
-                Value: processingType
-            },
-            {
-                $Type: 'UI.DataField',
-                Value: status
             }
         ]
     },
