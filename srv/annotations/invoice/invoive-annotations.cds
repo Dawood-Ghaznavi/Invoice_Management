@@ -43,6 +43,7 @@ annotate service.Invoices with {
     suggestedCostCenter        @(title: 'Suggested Cost Center');
     aiConfidence               @(title: 'AI Confidence');
     aiReason                   @(title: 'AI Recommendation Reason');
+    hasAttachments             @UI.Hidden;
 
     createdAt                  @(title: 'Created At');
     createdBy                  @(title: 'Created By');
@@ -364,6 +365,11 @@ annotate service.Invoices with @(
 annotate service.Invoices with @Common.SideEffects #ProcessingTypeFromPurchaseOrder: {
     SourceProperties: [purchaseOrder_purchaseOrder],
     TargetProperties: ['processingType']
+};
+
+annotate service.Invoices with @Common.SideEffects #AttachmentsChanged: {
+    SourceEntities  : [attachments],
+    TargetProperties: ['hasAttachments']
 };
 
 annotate service.Invoices with actions {

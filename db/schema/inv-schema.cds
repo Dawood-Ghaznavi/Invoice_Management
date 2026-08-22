@@ -55,6 +55,7 @@ entity Invoices : cuid, managed {
     aiConfidence               : Decimal(5,2);
     aiReason                   : LargeString;
     attachments: Composition of many Attachments;
+    virtual hasAttachments     : Boolean;
 }
 
 entity InvoiceItems : cuid {

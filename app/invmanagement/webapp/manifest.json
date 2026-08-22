@@ -164,6 +164,7 @@
                       "press": "invmanagement.ext.controller.AttachmentActions.extract",
                       "requiresSelection": false,
                       "visible": "{= %{IsActiveEntity} === false }",
+                      "enabled": "{hasAttachments}",
                       "position": {
                         "placement": "After",
                         "anchor": "StandardAction::Create"

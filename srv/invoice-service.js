@@ -400,6 +400,20 @@ console.log(" *** " , lineItems)
         req.notify('AI recommendation adopted successfully');
     });
 
+    this.after('READ', [Invoices.drafts, Invoices], async (result, req) => {
+        if (!req.query.SELECT?.one || !result) return;
+
+        const invoice = Array.isArray(result) ? result[0] : result;
+        if (!invoice) return;
+
+        const attachment = await SELECT.one
+            .from(req.target === Invoices.drafts ? Attachments.drafts : Attachments)
+            .columns('ID')
+            .where({ up__ID: invoice.ID });
+
+        invoice.hasAttachments = Boolean(attachment);
+    });
+
     this.on('READ', [Invoices.drafts , Invoices], async (req, next) => {
         const select = req.query.SELECT;
         if (!select) return next();
