@@ -1,0 +1,33 @@
+.aiInsightCard {
+    background: #f8fbff;
+    border: 1px solid #d9e5f2;
+    border-left: 5px solid #0a6ed1;
+    border-radius: 8px;
+    padding: 18px;
+}
+
+.aiIconBlue {
+    color: #0a6ed1;
+}
+
+.aiSuggestionBox {
+    border-right: 1px solid #dfe5eb;
+    padding-right: 24px;
+}
+
+.aiValueCode {
+    color: #52606d;
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.textMuted {
+    color: #6a7682;
+    font-size: 0.9rem;
+}
+
+.aiReasoningText {
+    color: #1d2d3e;
+    line-height: 1.45;
+}

@@ -141,15 +141,6 @@ annotate service.Invoices with @(
     UI.Identification: [
         {
             $Type     : 'UI.DataFieldForAction',
-            Label     : 'Extract',
-            Action    : 'InvoiceService.extract',
-            ![@UI.Hidden]: {$edmJson: {$Eq: [
-                        {$Path: 'IsActiveEntity'},
-                        true
-                    ]}}
-        },
-        {
-            $Type     : 'UI.DataFieldForAction',
             Label     : 'Submit',
             Action    : 'InvoiceService.submit',
             ![@UI.Hidden]: (status != 'DRAFT' or $draft.IsActiveEntity == false)
@@ -215,13 +206,6 @@ annotate service.Invoices with @(
             Label : 'Accounting Assignment',
             Target: '@UI.FieldGroup#AccountingAssignment',
             ![@UI.Hidden]: (processingType != 'NON_PO')
-        },
-        {
-            $Type : 'UI.ReferenceFacet',
-            ID    : 'AIRecommendation',
-            Label : 'AI Recommendation',
-            Target: '@UI.FieldGroup#AIRecommendation',
-            ![@UI.Hidden]: (processingType != 'NON_PO' or aiConfidence == null)
         },
         {
             $Type : 'UI.ReferenceFacet',

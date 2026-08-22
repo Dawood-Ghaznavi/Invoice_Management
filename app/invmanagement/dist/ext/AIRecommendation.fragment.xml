@@ -1,0 +1,173 @@
+<core:FragmentDefinition
+    xmlns:core="sap.ui.core"
+    xmlns="sap.m"
+    xmlns:layout="sap.ui.layout"
+    xmlns:micro="sap.suite.ui.microchart">
+
+    <VBox
+        visible="{ai>/hasRecommendation}"
+        class="sapUiMediumMarginTop sapUiContentPadding aiInsightCard">
+
+        <!-- Header -->
+        <HBox
+            alignItems="Center"
+            justifyContent="SpaceBetween"
+            class="sapUiSmallMarginBottom">
+
+            <HBox alignItems="Center">
+                <core:Icon
+                    src="sap-icon://ai"
+                    size="1.5rem"
+                    class="sapUiSmallMarginEnd aiIconBlue" />
+
+                <VBox>
+                    <Title
+                        text="AI Accounting Recommendation"
+                        level="H3"
+                        titleStyle="H4" />
+
+                    <Text
+                        text="AI-assisted account assignment"
+                        class="textMuted" />
+                </VBox>
+            </HBox>
+
+            <ObjectStatus
+                text="Analysis Complete"
+                state="Success"
+                icon="sap-icon://sys-enter-2" />
+
+        </HBox>
+
+
+        <!-- Short explanation -->
+        <Text
+            text="AI analyzed this Non-PO invoice and the available accounting assignments to recommend the best match."
+            wrapping="true"
+            class="sapUiSmallMarginBottom textMuted" />
+
+
+        <!-- Main content -->
+        <layout:Grid
+            defaultSpan="XL6 L6 M12 S12"
+            vSpacing="1"
+            hSpacing="1">
+
+            <!-- LEFT: Recommended accounting assignment -->
+            <VBox class="aiSuggestionBox sapUiContentPadding">
+
+                <Label
+                    text="Recommended G/L Account"
+                    design="Bold"
+                    class="sapUiTinyMarginBottom" />
+
+                <Title
+                    text="{ai>/glAccountDescription}"
+                    level="H4"
+                    titleStyle="H5" />
+
+                <Text
+                    text="{ai>/glAccount}"
+                    class="aiValueCode sapUiMediumMarginBottom" />
+
+
+                <Label
+                    text="Recommended Cost Center"
+                    design="Bold"
+                    class="sapUiTinyMarginBottom" />
+
+                <Title
+                    text="{ai>/costCenterDescription}"
+                    level="H4"
+                    titleStyle="H5" />
+
+                <Text
+                    text="{ai>/costCenter}"
+                    class="aiValueCode" />
+
+            </VBox>
+
+
+            <!-- RIGHT: Confidence + explanation -->
+            <VBox class="sapUiContentPadding">
+
+                <Label
+                    text="Recommendation Confidence"
+                    design="Bold"
+                    class="sapUiTinyMarginBottom" />
+
+                <HBox
+                    alignItems="Center"
+                    class="sapUiMediumMarginBottom">
+
+                    <micro:RadialMicroChart
+                        percentage="{ai>/confidence}"
+                        size="Responsive"
+                        valueColor="{=
+                            ${ai>/confidence} >= 80
+                                ? 'Good'
+                                : ${ai>/confidence} >= 60
+                                    ? 'Critical'
+                                    : 'Error'
+                        }"
+                        width="4rem"
+                        height="4rem"
+                        class="sapUiSmallMarginEnd" />
+
+                    <VBox>
+                        <Title
+                            text="{= ${ai>/confidence} + '%' }"
+                            level="H4"
+                            titleStyle="H4" />
+
+                        <ObjectStatus
+                            text="{=
+                                ${ai>/confidence} >= 80
+                                    ? 'High Confidence'
+                                    : ${ai>/confidence} >= 60
+                                        ? 'Medium Confidence'
+                                        : 'Low Confidence'
+                            }"
+                            state="{=
+                                ${ai>/confidence} >= 80
+                                    ? 'Success'
+                                    : ${ai>/confidence} >= 60
+                                        ? 'Warning'
+                                        : 'Error'
+                            }" />
+                    </VBox>
+
+                </HBox>
+
+
+                <Label
+                    text="Why this recommendation?"
+                    design="Bold"
+                    class="sapUiTinyMarginBottom" />
+
+                <Text
+                    text="{ai>/reason}"
+                    wrapping="true"
+                    class="aiReasoningText" />
+
+            </VBox>
+
+        </layout:Grid>
+
+
+        <!-- Action -->
+        <HBox
+            justifyContent="End"
+            class="sapUiMediumMarginTop">
+
+            <Button
+                text="Apply Recommendation"
+                type="Emphasized"
+                icon="sap-icon://accept"
+                press=".extension.invmanagement.ext.controller.AIRecommendation.onApplyAiRecommendation" />
+
+        </HBox>
+
+    </VBox>
+
+</core:FragmentDefinition>

@@ -67,7 +67,9 @@
 			"libs": {
 				"sap.m": {},
 				"sap.ui.core": {},
-				"sap.fe.templates": {}
+				"sap.fe.templates": {},
+				"sap.ui.layout": {},
+				"sap.suite.ui.microchart": {}
 			}
 		},
 		"contentDensities": {
@@ -104,7 +106,20 @@
 			}
 		},
 		"resources": {
-			"css": []
+			"css": [
+				{
+					"uri": "css/AIRecommendation.css"
+				}
+			]
+		},
+		"extends": {
+			"extensions": {
+				"sap.ui.controllerExtensions": {
+					"sap.fe.templates.ObjectPage.ObjectPageController": {
+						"controllerName": "invmanagement.ext.controller.AIRecommendation"
+					}
+				}
+			}
 		},
 		"routing": {
 			"config": {},
@@ -153,7 +168,39 @@
 					"options": {
 						"settings": {
 							"editableHeaderContent": false,
-							"contextPath": "/Invoices"
+							"contextPath": "/Invoices",
+							"controlConfiguration": {
+								"attachments/@com.sap.vocabularies.UI.v1.LineItem": {
+									"actions": {
+										"ExtractInvoice": {
+											"text": "Extract",
+											"press": "invmanagement.ext.controller.AttachmentActions.extract",
+											"requiresSelection": false,
+											"visible": "{= %{IsActiveEntity} === false }",
+											"position": {
+												"placement": "After",
+												"anchor": "StandardAction::Create"
+											}
+										}
+									}
+								}
+							},
+							"content": {
+								"body": {
+									"sections": {
+										"AIRecommendationCustomSection": {
+											"type": "XMLFragment",
+											"template": "invmanagement.ext.AIRecommendation",
+											"title": "AI Recommendation",
+											"position": {
+												"placement": "After",
+												"anchor": "AccountingAssignment"
+											},
+											"visible": "{= %{processingType} === 'NON_PO' && %{aiConfidence} !== null }"
+										}
+									}
+								}
+							}
 						}
 					}
 				}

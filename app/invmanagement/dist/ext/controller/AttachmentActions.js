@@ -1,0 +1,2 @@
+sap.ui.define([],function(){"use strict";return{extract:async function(e){if(!e){return}await this.editFlow.invokeAction("InvoiceService.extract",{contexts:[e],model:e.getModel(),skipParameterDialog:true})}}});
+//# sourceMappingURL=AttachmentActions.js.map

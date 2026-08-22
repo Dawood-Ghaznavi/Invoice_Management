@@ -1,10 +1,18 @@
 {
   "i18n/i18n.properties": 1786998606091,
+  "manifest.json": 1787417009122,
+  "ext/controller/AIRecommendation.controller.js": 1787415958912,
+  "ext/controller/AttachmentActions.js": 1787417034086,
   "Component.js": 1786998590691,
-  "manifest.json": 1786998606075,
+  "ext/controller/AttachmentActions-dbg.js": 1787417034086,
+  "ext/controller/AttachmentActions.js.map": 1787417055260,
+  "ext/controller/AIRecommendation-dbg.controller.js": 1787415958912,
+  "ext/controller/AIRecommendation.controller.js.map": 1787417055269,
   "Component-dbg.js": 1786998590691,
-  "Component.js.map": 1787075161664,
-  "Component-preload.js": 1787075161723,
-  "Component-preload.js.map": 1787075161723,
+  "Component.js.map": 1787417055261,
+  "Component-preload.js": 1787417055340,
+  "Component-preload.js.map": 1787417055340,
+  "ext/AIRecommendation.fragment.xml": 1787415774335,
+  "css/AIRecommendation.css": 1787415107475,
   "index.html": 1786998590695
 }
