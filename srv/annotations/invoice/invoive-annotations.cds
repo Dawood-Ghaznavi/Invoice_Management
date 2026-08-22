@@ -152,7 +152,13 @@ annotate service.Invoices with @(
             $Type     : 'UI.DataFieldForAction',
             Label     : 'Submit',
             Action    : 'InvoiceService.submit',
-            ![@UI.Hidden]: (processingType != 'PO' or status != 'DRAFT' or $draft.IsActiveEntity == false)
+            ![@UI.Hidden]: (status != 'DRAFT' or $draft.IsActiveEntity == false)
+        },
+        {
+            $Type     : 'UI.DataFieldForAction',
+            Label     : 'Generate AI Recommendation',
+            Action    : 'InvoiceService.fetchRec',
+            ![@UI.Hidden]: (processingType != 'NON_PO' or status != 'DRAFT' or $draft.IsActiveEntity == true)
         },
         {
             $Type: 'UI.DataField',
@@ -339,6 +345,12 @@ annotate service.Invoices with @(
             {
                 $Type: 'UI.DataField',
                 Value: aiReason
+            },
+            {
+                $Type     : 'UI.DataFieldForAction',
+                Label     : 'Adopt Recommendation',
+                Action    : 'InvoiceService.adopt',
+                ![@UI.Hidden]: (processingType != 'NON_PO' or suggestedGLAccount == null or suggestedCostCenter == null or $draft.IsActiveEntity == true)
             }
         ]
     },
@@ -371,8 +383,43 @@ annotate service.Invoices with @Common.SideEffects #ProcessingTypeFromPurchaseOr
 };
 
 annotate service.Invoices with actions {
+    extract @(Common.SideEffects: {
+        TargetEntities: ['in/items'],
+        TargetProperties: [
+            'in/documentNumber',
+            'in/documentDate',
+            'in/dueDate',
+            'in/grossAmount',
+            'in/netAmount',
+            'in/taxAmount',
+            'in/currency',
+            'in/senderName',
+            'in/senderAddress',
+            'in/invoicingParty',
+            'in/purchaseOrder_purchaseOrder',
+            'in/processingType'
+        ]
+    });
     submit @(Common.SideEffects: {
         TargetProperties: ['in/status']
+    });
+    fetchRec @(Common.SideEffects: {
+        TargetProperties: [
+            'in/suggestedGLAccount',
+            'in/suggestedCostCenter',
+            'in/aiConfidence',
+            'in/aiReason'
+        ]
+    });
+    adopt @(Common.SideEffects: {
+        TargetEntities: [
+            'in/glAccount',
+            'in/costCenter'
+        ],
+        TargetProperties: [
+            'in/glAccount_code',
+            'in/costCenter_code'
+        ]
     });
 };
 

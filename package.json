@@ -55,6 +55,13 @@
           "requestTimeout": 30000
         }
       },
+      "GPT": {
+        "kind": "rest",
+        "credentials": {
+          "destination": "GPT",
+          "requestTimeout": 30000
+        }
+      },
       "[production]": {
         "auth": "xsuaa"
       }

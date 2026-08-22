@@ -20,6 +20,8 @@ module.exports = async function () {
     const {
         Invoices,
         InvoiceItems,
+        GLAccounts,
+        CostCenters,
         PurchaseOrder,
         PurchaseOrderItem,
         MaterialDocumentHeader,
@@ -29,6 +31,7 @@ module.exports = async function () {
     const purchaseOrderService = await cds.connect.to('CE_PURCHASEORDER_0001');
     const materialDocumentService = await cds.connect.to('API_MATERIAL_DOCUMENT_SRV');
     const documentService = await cds.connect.to('Document');
+    const gpt = await cds.connect.to('GPT');
 
     const Attachments = this.entities['Invoices.attachments'];
 
@@ -189,7 +192,13 @@ console.log(" *** " , lineItems)
     this.on('submit', Invoices, async req => {
         const { ID } = req.params[0];
         const invoice = await SELECT.one.from(Invoices)
-            .columns('status', 'processingType', 'purchaseOrder_purchaseOrder')
+            .columns(
+                'status',
+                'processingType',
+                'purchaseOrder_purchaseOrder',
+                'glAccount_code',
+                'costCenter_code'
+            )
             .where({ ID });
 
         if (!invoice) {
@@ -200,25 +209,195 @@ console.log(" *** " , lineItems)
             return req.error({ message: 'Only draft invoices can be submitted', status: 400 });
         }
 
-        if (invoice.processingType !== 'PO' || !invoice.purchaseOrder_purchaseOrder) {
-            return req.error({ message: 'A Purchase Order is required before submitting a PO invoice', status: 400 });
-        }
+        if (invoice.processingType === 'PO') {
+            if (!invoice.purchaseOrder_purchaseOrder) {
+                return req.error({ message: 'A Purchase Order is required before submitting a PO invoice', status: 400 });
+            }
 
-        const purchaseOrder = await purchaseOrderService.tx(req).run(
-            SELECT.one.from(PurchaseOrder)
-                .columns('purchaseOrder')
-                .where({ purchaseOrder: invoice.purchaseOrder_purchaseOrder })
-        );
+            const purchaseOrder = await purchaseOrderService.tx(req).run(
+                SELECT.one.from(PurchaseOrder)
+                    .columns('purchaseOrder')
+                    .where({ purchaseOrder: invoice.purchaseOrder_purchaseOrder })
+            );
 
-        if (!purchaseOrder) {
-            return req.error({
-                message: `Purchase Order ${invoice.purchaseOrder_purchaseOrder} was not found`,
-                status: 400
-            });
+            if (!purchaseOrder) {
+                return req.error({
+                    message: `Purchase Order ${invoice.purchaseOrder_purchaseOrder} was not found`,
+                    status: 400
+                });
+            }
+        } else if (invoice.processingType === 'NON_PO') {
+            if (!invoice.glAccount_code || !invoice.costCenter_code) {
+                return req.error({ message: 'G/L Account and Cost Center are required before submitting a Non-PO invoice', status: 400 });
+            }
+
+            const glAccount = await SELECT.one.from(GLAccounts)
+                .columns('code')
+                .where({ code: invoice.glAccount_code, isActive: true });
+            const costCenter = await SELECT.one.from(CostCenters)
+                .columns('code')
+                .where({ code: invoice.costCenter_code, isActive: true });
+
+            if (!glAccount || !costCenter) {
+                return req.error({ message: 'The selected G/L Account or Cost Center is no longer active', status: 400 });
+            }
+        } else {
+            return req.error({ message: 'Invoice processing type is missing', status: 400 });
         }
 
         await UPDATE(Invoices).set({ status: 'IN_APPROVAL' }).where({ ID });
         req.notify('Invoice submitted for approval');
+    });
+
+    this.on('fetchRec', Invoices.drafts, async req => {
+        const { ID } = req.params[0];
+        const invoice = await SELECT.one.from(Invoices.drafts)
+            .columns(
+                'documentNumber',
+                'documentDate',
+                'grossAmount',
+                'netAmount',
+                'taxAmount',
+                'currency',
+                'senderName',
+                'senderAddress',
+                'invoicingParty',
+                'processingType',
+                'status'
+            )
+            .where({ ID });
+
+        if (!invoice) {
+            return req.error({ message: 'Invoice draft not found', status: 404 });
+        }
+
+        if (invoice.processingType !== 'NON_PO' || invoice.status !== 'DRAFT') {
+            return req.error({ message: 'AI recommendations are only available for draft Non-PO invoices', status: 400 });
+        }
+
+        const lineItems = await SELECT.from(InvoiceItems.drafts)
+            .columns('poItems', 'productCode', 'description', 'quantity', 'unitPrice', 'netAmount')
+            .where({ invoice_ID: ID });
+        const glAccounts = await SELECT.from(GLAccounts)
+            .columns('code', 'name', 'description', 'companyCode')
+            .where({ isActive: true });
+        const costCenters = await SELECT.from(CostCenters)
+            .columns('code', 'name', 'description', 'companyCode')
+            .where({ isActive: true });
+
+        if (!glAccounts.length || !costCenters.length) {
+            return req.error({ message: 'No active G/L accounts or cost centers are available', status: 400 });
+        }
+
+        const response = await gpt.post('/v1/responses', {
+            model: 'gpt-5.6-luna',
+            store: false,
+            instructions: 'Recommend the best accounting assignment for this Non-PO invoice. Choose only from the supplied G/L accounts and cost centers. Base the recommendation on the supplier, invoice amounts and line-item descriptions. Give a concise reason and a confidence from 0 to 100.',
+            input: JSON.stringify({
+                invoice,
+                lineItems,
+                glAccounts,
+                costCenters
+            }),
+            text: {
+                format: {
+                    type: 'json_schema',
+                    name: 'invoice_account_assignment',
+                    strict: true,
+                    schema: {
+                        type: 'object',
+                        properties: {
+                            glAccount: {
+                                type: 'string',
+                                enum: glAccounts.map(account => account.code)
+                            },
+                            costCenter: {
+                                type: 'string',
+                                enum: costCenters.map(costCenter => costCenter.code)
+                            },
+                            confidence: {
+                                type: 'number',
+                                minimum: 0,
+                                maximum: 100
+                            },
+                            reason: {
+                                type: 'string'
+                            }
+                        },
+                        required: ['glAccount', 'costCenter', 'confidence', 'reason'],
+                        additionalProperties: false
+                    }
+                }
+            }
+        });
+
+        const outputText = response.output
+            ?.find(output => output.type === 'message')
+            ?.content?.find(content => content.type === 'output_text')
+            ?.text;
+
+        if (!outputText) {
+            return req.error({ message: 'AI recommendation could not be generated', status: 502 });
+        }
+
+        let recommendation;
+
+        try {
+            recommendation = JSON.parse(outputText);
+        } catch {
+            return req.error({ message: 'AI recommendation returned an invalid response', status: 502 });
+        }
+
+        if (!glAccounts.some(account => account.code === recommendation.glAccount) ||
+            !costCenters.some(costCenter => costCenter.code === recommendation.costCenter)) {
+            return req.error({ message: 'AI recommendation returned an invalid account assignment', status: 502 });
+        }
+
+        await UPDATE(Invoices.drafts).set({
+            suggestedGLAccount: recommendation.glAccount,
+            suggestedCostCenter: recommendation.costCenter,
+            aiConfidence: recommendation.confidence,
+            aiReason: recommendation.reason
+        }).where({ ID });
+
+        req.notify('AI recommendation generated successfully');
+    });
+
+    this.on('adopt', Invoices.drafts, async req => {
+        const { ID } = req.params[0];
+        const invoice = await SELECT.one.from(Invoices.drafts)
+            .columns('processingType', 'status', 'suggestedGLAccount', 'suggestedCostCenter')
+            .where({ ID });
+
+        if (!invoice) {
+            return req.error({ message: 'Invoice draft not found', status: 404 });
+        }
+
+        if (invoice.processingType !== 'NON_PO' || invoice.status !== 'DRAFT') {
+            return req.error({ message: 'AI recommendations can only be adopted for draft Non-PO invoices', status: 400 });
+        }
+
+        if (!invoice.suggestedGLAccount || !invoice.suggestedCostCenter) {
+            return req.error({ message: 'No AI recommendation is available to adopt', status: 400 });
+        }
+
+        const glAccount = await SELECT.one.from(GLAccounts)
+            .columns('code')
+            .where({ code: invoice.suggestedGLAccount, isActive: true });
+        const costCenter = await SELECT.one.from(CostCenters)
+            .columns('code')
+            .where({ code: invoice.suggestedCostCenter, isActive: true });
+
+        if (!glAccount || !costCenter) {
+            return req.error({ message: 'The recommended account assignment is no longer available', status: 400 });
+        }
+
+        await UPDATE(Invoices.drafts).set({
+            glAccount_code: glAccount.code,
+            costCenter_code: costCenter.code
+        }).where({ ID });
+
+        req.notify('AI recommendation adopted successfully');
     });
 
     this.on('READ', [Invoices.drafts , Invoices], async (req, next) => {
