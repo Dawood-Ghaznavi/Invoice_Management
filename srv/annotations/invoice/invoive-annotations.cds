@@ -22,7 +22,27 @@ annotate service.Invoices with {
         title               : 'Tax Amount',
         Measures.ISOCurrency: currency
     );
-    currency                   @(title: 'Currency');
+    currency                   @(
+        title           : 'Currency',
+        Common.ValueList: {
+            CollectionPath: 'Currencies',
+            Parameters    : [
+                {
+                    $Type            : 'Common.ValueListParameterInOut',
+                    LocalDataProperty: currency,
+                    ValueListProperty: 'code'
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'name'
+                },
+                {
+                    $Type            : 'Common.ValueListParameterDisplayOnly',
+                    ValueListProperty: 'symbol'
+                }
+            ]
+        }
+    );
 
     senderName                 @(title: 'Supplier');
     senderAddress              @(
@@ -195,8 +215,8 @@ annotate service.Invoices with @(
         {
             $Type : 'UI.ReferenceFacet',
             ID    : 'InvoiceItems',
-            Label : 'Line Items',
-            Target: 'items/@UI.LineItem'
+            Label : 'Invoice Items',
+            Target: 'items/@UI.PresentationVariant'
         },
         {
             $Type : 'UI.ReferenceFacet',
@@ -204,6 +224,12 @@ annotate service.Invoices with @(
             Label : 'Accounting Assignment',
             Target: '@UI.FieldGroup#AccountingAssignment',
             ![@UI.Hidden]: (processingType != 'Non-PO')
+        },
+        {
+            $Type : 'UI.ReferenceFacet',
+            ID    : 'attachments_attachments',
+            Label : '{i18n>Attachments}',
+            Target: 'attachments/@UI.LineItem'
         },
         {
             $Type : 'UI.ReferenceFacet',
@@ -245,16 +271,16 @@ annotate service.Invoices with @(
             },
             {
                 $Type: 'UI.DataField',
-                Value: senderAddress
-            },
-            {
-                $Type: 'UI.DataField',
                 Value: purchaseOrder_purchaseOrder,
                 Label: 'Purchase Order'
             },
             {
                 $Type: 'UI.DataField',
                 Value: currency
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: senderAddress
             }
         ]
     },
@@ -280,23 +306,25 @@ annotate service.Invoices with @(
         Data : [
             {
                 $Type: 'UI.DataField',
-                Value: glAccount.code,
+                Value: glAccount_code,
                 Label: 'G/L Account'
             },
             {
-                $Type: 'UI.DataField',
-                Value: glAccount.name,
-                Label: 'G/L Account Name'
+                $Type               : 'UI.DataField',
+                Value               : glAccount.name,
+                Label               : 'G/L Account Name',
+                @Common.FieldControl: #ReadOnly
             },
             {
                 $Type: 'UI.DataField',
-                Value: costCenter.code,
+                Value: costCenter_code,
                 Label: 'Cost Center'
             },
             {
-                $Type: 'UI.DataField',
-                Value: costCenter.name,
-                Label: 'Cost Center Name'
+                $Type               : 'UI.DataField',
+                Value               : costCenter.name,
+                Label               : 'Cost Center Name',
+                @Common.FieldControl: #ReadOnly
             }
         ]
     },
@@ -355,6 +383,16 @@ annotate service.Invoices with @Common.SideEffects #ProcessingTypeFromPurchaseOr
     TargetProperties: ['processingType']
 };
 
+annotate service.Invoices with @Common.SideEffects #GLAccountName: {
+    SourceProperties: [glAccount_code],
+    TargetEntities  : [glAccount]
+};
+
+annotate service.Invoices with @Common.SideEffects #CostCenterName: {
+    SourceProperties: [costCenter_code],
+    TargetEntities  : [costCenter]
+};
+
 annotate service.Invoices with @Common.SideEffects #AttachmentsChanged: {
     SourceEntities  : [attachments],
     TargetProperties: ['hasAttachments']
@@ -403,9 +441,11 @@ annotate service.Invoices with actions {
 
 annotate service.InvoiceItems with @(UI.LineItem: [
     {
-        $Type         : 'UI.DataField',
-        Value         : poItems,
-        @UI.Importance: #High
+        $Type               : 'UI.DataField',
+        Value               : poItems,
+        Label               : 'Item No.',
+        @UI.Importance      : #High,
+        @Common.FieldControl: #ReadOnly
     },
     {
         $Type         : 'UI.DataField',
@@ -432,4 +472,13 @@ annotate service.InvoiceItems with @(UI.LineItem: [
         Value         : netAmount,
         @UI.Importance: #High
     }
-]);
+],
+    UI.PresentationVariant: {
+        SortOrder     : [{
+            $Type     : 'Common.SortOrderType',
+            Property  : poItems,
+            Descending: false
+        }],
+        Visualizations: ['@UI.LineItem']
+    }
+);
