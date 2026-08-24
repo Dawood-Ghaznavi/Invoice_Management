@@ -10,7 +10,7 @@
 			]
 		},
 		"applicationVersion": {
-			"version": "0.0.1"
+			"version": "0.0.5"
 		},
 		"title": "{{appTitle}}",
 		"description": "{{appDescription}}",
@@ -187,6 +187,27 @@
 								}
 							},
 							"content": {
+								"header": {
+									"facets": {
+										"StatusHeaderFacet": {
+											"template": "invmanagement.ext.StatusHeader",
+											"title": "Status",
+											"position": {
+												"placement": "After",
+												"anchor": "InvoiceNumberHeaderFacet"
+											}
+										},
+										"ProcessingTypeHeaderFacet": {
+											"template": "invmanagement.ext.InvoiceTypeHeader",
+											"title": "Processing Type",
+											"visible": "{= !!%{processingType} }",
+											"position": {
+												"placement": "After",
+												"anchor": "StatusHeaderFacet"
+											}
+										}
+									}
+								},
 								"body": {
 									"sections": {
 										"AIRecommendationCustomSection": {
@@ -197,7 +218,7 @@
 												"placement": "After",
 												"anchor": "AccountingAssignment"
 											},
-											"visible": "{= %{processingType} === 'NON_PO' && %{aiConfidence} !== null }"
+											"visible": "{= %{processingType} === 'Non-PO' && %{aiConfidence} !== null }"
 										}
 									}
 								}

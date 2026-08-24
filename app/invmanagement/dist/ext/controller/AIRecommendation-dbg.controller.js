@@ -70,7 +70,7 @@ sap.ui.define([
                     oBindingContext.requestProperty("aiReason")
                 ]);
 
-                const bHasRecommendation = sProcessingType === "NON_PO" &&
+                const bHasRecommendation = sProcessingType === "Non-PO" &&
                     Boolean(sGLAccount) &&
                     Boolean(sCostCenter) &&
                     vConfidence !== null &&

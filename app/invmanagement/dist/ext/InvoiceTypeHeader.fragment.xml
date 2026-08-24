@@ -1,0 +1,9 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <GenericTag
+        id="idTag"
+        text="{processingType}"
+        design="StatusIconHidden"
+        status="None" />
+</core:FragmentDefinition>

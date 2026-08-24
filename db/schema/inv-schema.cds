@@ -19,7 +19,7 @@ type InvoiceStatus : String enum {
 
 type ProcessingType : String enum {
     PO;
-    NON_PO;
+    NON_PO = 'Non-PO';
 }
     
 

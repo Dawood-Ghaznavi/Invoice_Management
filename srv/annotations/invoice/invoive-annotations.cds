@@ -25,8 +25,11 @@ annotate service.Invoices with {
     currency                   @(title: 'Currency');
 
     senderName                 @(title: 'Supplier');
-    senderAddress              @(title: 'Supplier Address');
-    invoicingParty             @(title: 'Invoicing Party');
+    senderAddress              @(
+        title           : 'Supplier Address',
+        UI.MultiLineText: true
+    );
+    invoicingParty             @UI.Hidden;
 
     purchaseOrder              @(title: 'Purchase Order');
     glAccount                  @(title: 'G/L Account');
@@ -130,8 +133,8 @@ annotate service.Invoices with @(
     UI.HeaderInfo     : {
         TypeName      : 'Invoice',
         TypeNamePlural: 'Invoices',
-        Title         : {Value: senderName},
-        Description   : {Value: senderAddress },
+        Title         : {Value: reqNumber},
+        Description   : {Value: senderName},
         TypeImageUrl  : 'sap-icon://receipt'
         
     },
@@ -141,18 +144,6 @@ annotate service.Invoices with @(
             ID    : 'InvoiceNumberHeaderFacet',
             Label : 'Invoice Number',
             Target: '@UI.FieldGroup#InvoiceNumberHeader'
-        },
-        {
-            $Type : 'UI.ReferenceFacet',
-            ID    : 'StatusHeaderFacet',
-            Label : 'Status',
-            Target: '@UI.FieldGroup#StatusHeader'
-        },
-        {
-            $Type : 'UI.ReferenceFacet',
-            ID    : 'ProcessingTypeHeaderFacet',
-            Label : 'Processing Type',
-            Target: '@UI.FieldGroup#ProcessingTypeHeader'
         }
     ],
     UI.Identification: [
@@ -166,7 +157,7 @@ annotate service.Invoices with @(
             $Type     : 'UI.DataFieldForAction',
             Label     : 'Generate AI Recommendation',
             Action    : 'InvoiceService.fetchRec',
-            ![@UI.Hidden]: (processingType != 'NON_PO' or status != 'DRAFT' or $draft.IsActiveEntity == true)
+            ![@UI.Hidden]: (processingType != 'Non-PO' or status != 'DRAFT' or $draft.IsActiveEntity == true)
         },
         {
             $Type: 'UI.DataField',
@@ -212,7 +203,7 @@ annotate service.Invoices with @(
             ID    : 'AccountingAssignment',
             Label : 'Accounting Assignment',
             Target: '@UI.FieldGroup#AccountingAssignment',
-            ![@UI.Hidden]: (processingType != 'NON_PO')
+            ![@UI.Hidden]: (processingType != 'Non-PO')
         },
         {
             $Type : 'UI.ReferenceFacet',
@@ -230,22 +221,6 @@ annotate service.Invoices with @(
         Data : [{
             $Type: 'UI.DataField',
             Value: documentNumber,
-            Label: ''
-        }]
-    },
-    UI.FieldGroup #StatusHeader            : {
-        $Type: 'UI.FieldGroupType',
-        Data : [{
-            $Type: 'UI.DataField',
-            Value: status,
-            Label: ''
-        }]
-    },
-    UI.FieldGroup #ProcessingTypeHeader    : {
-        $Type: 'UI.FieldGroupType',
-        Data : [{
-            $Type: 'UI.DataField',
-            Value: processingType,
             Label: ''
         }]
     },
@@ -271,10 +246,6 @@ annotate service.Invoices with @(
             {
                 $Type: 'UI.DataField',
                 Value: senderAddress
-            },
-            {
-                $Type: 'UI.DataField',
-                Value: invoicingParty
             },
             {
                 $Type: 'UI.DataField',
@@ -352,7 +323,7 @@ annotate service.Invoices with @(
                 $Type     : 'UI.DataFieldForAction',
                 Label     : 'Adopt Recommendation',
                 Action    : 'InvoiceService.adopt',
-                ![@UI.Hidden]: (processingType != 'NON_PO' or suggestedGLAccount == null or suggestedCostCenter == null or $draft.IsActiveEntity == true)
+                ![@UI.Hidden]: (processingType != 'Non-PO' or suggestedGLAccount == null or suggestedCostCenter == null or $draft.IsActiveEntity == true)
             }
         ]
     },

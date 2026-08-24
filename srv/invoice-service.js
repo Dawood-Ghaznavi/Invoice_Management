@@ -43,7 +43,7 @@ module.exports = async function () {
 
         const purchaseOrderNumber = req.data.purchaseOrder_purchaseOrder?.trim();
         req.data.purchaseOrder_purchaseOrder = purchaseOrderNumber || null;
-        req.data.processingType = purchaseOrderNumber ? 'PO' : 'NON_PO';
+        req.data.processingType = purchaseOrderNumber ? 'PO' : 'Non-PO';
     });
 
     this.before(['CREATE', 'UPDATE'], Invoices, req => {
@@ -54,7 +54,7 @@ module.exports = async function () {
 
         const purchaseOrderNumber = req.data.purchaseOrder_purchaseOrder?.trim();
         req.data.purchaseOrder_purchaseOrder = purchaseOrderNumber || null;
-        req.data.processingType = purchaseOrderNumber ? 'PO' : 'NON_PO';
+        req.data.processingType = purchaseOrderNumber ? 'PO' : 'Non-PO';
     });
 
     this.on('extract', Invoices.drafts, async req => {
@@ -157,7 +157,7 @@ module.exports = async function () {
             senderAddress: headerFields.senderAddress,
             invoicingParty: headerFields.invoicingParty,
             purchaseOrder_purchaseOrder: headerFields.purchaseOrderNumber?.trim() || null,
-            processingType: headerFields.purchaseOrderNumber?.trim() ? 'PO' : 'NON_PO'
+            processingType: headerFields.purchaseOrderNumber?.trim() ? 'PO' : 'Non-PO'
         };
 
         for (const field in invoiceData) {
@@ -226,7 +226,7 @@ console.log(" *** " , lineItems)
                     status: 400
                 });
             }
-        } else if (invoice.processingType === 'NON_PO') {
+        } else if (invoice.processingType === 'Non-PO') {
             if (!invoice.glAccount_code || !invoice.costCenter_code) {
                 return req.error({ message: 'G/L Account and Cost Center are required before submitting a Non-PO invoice', status: 400 });
             }
@@ -271,7 +271,7 @@ console.log(" *** " , lineItems)
             return req.error({ message: 'Invoice draft not found', status: 404 });
         }
 
-        if (invoice.processingType !== 'NON_PO' || invoice.status !== 'DRAFT') {
+        if (invoice.processingType !== 'Non-PO' || invoice.status !== 'DRAFT') {
             return req.error({ message: 'AI recommendations are only available for draft Non-PO invoices', status: 400 });
         }
 
@@ -373,7 +373,7 @@ console.log(" *** " , lineItems)
             return req.error({ message: 'Invoice draft not found', status: 404 });
         }
 
-        if (invoice.processingType !== 'NON_PO' || invoice.status !== 'DRAFT') {
+        if (invoice.processingType !== 'Non-PO' || invoice.status !== 'DRAFT') {
             return req.error({ message: 'AI recommendations can only be adopted for draft Non-PO invoices', status: 400 });
         }
 

@@ -7,6 +7,6 @@ TRIGGER Invoice BEFORE
             IF :MYNEWROW.reqNumber IS NULL THEN
                 SELECT "invoice_reqNumber".nextval INTO TH_No
                 FROM DUMMY;
-                MYNEWROW.reqNumber = :TH_No;           
+                MYNEWROW.reqNumber = 'REQ-' || LPAD(TO_NVARCHAR(:TH_No - 1000000), 6, '0');
             END IF;
           END;  

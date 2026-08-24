@@ -31,3 +31,7 @@
     color: #1d2d3e;
     line-height: 1.45;
 }
+
+[id$="--idTag"].sapMGenericTag {
+    transform: translateY(-0.375rem);
+}

@@ -1,0 +1,8 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <ObjectStatus
+        text="{= %{status} === 'DRAFT' ? 'Draft' : %{status} === 'IN_APPROVAL' ? 'In Approval' : %{status} === 'APPROVED' ? 'Approved' : %{status} === 'REJECTED' ? 'Rejected' : %{status} === 'POSTED' ? 'Posted' : %{status} || '' }"
+        state="{= %{status} === 'DRAFT' ? 'Information' : %{status} === 'IN_APPROVAL' ? 'Warning' : %{status} === 'REJECTED' ? 'Error' : %{status} === 'APPROVED' || %{status} === 'POSTED' ? 'Success' : 'None' }"
+        icon="{= %{status} === 'DRAFT' ? 'sap-icon://information' : %{status} === 'IN_APPROVAL' ? 'sap-icon://pending' : %{status} === 'REJECTED' ? 'sap-icon://error' : %{status} === 'APPROVED' ? 'sap-icon://accept' : %{status} === 'POSTED' ? 'sap-icon://complete' : '' }" />
+</core:FragmentDefinition>
