@@ -174,12 +174,6 @@ annotate service.Invoices with @(
             ![@UI.Hidden]: (status != 'DRAFT' or $draft.IsActiveEntity == false)
         },
         {
-            $Type     : 'UI.DataFieldForAction',
-            Label     : 'Generate AI Recommendation',
-            Action    : 'InvoiceService.fetchRec',
-            ![@UI.Hidden]: (processingType != 'Non-PO' or status != 'DRAFT' or $draft.IsActiveEntity == true)
-        },
-        {
             $Type: 'UI.DataField',
             Value: documentNumber
         },

@@ -5,7 +5,7 @@
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
-      "version": "0.0.5"
+      "version": "0.0.10"
     },
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
@@ -175,6 +175,17 @@
               },
               "content": {
                 "header": {
+                  "actions": {
+                    "GenerateAIRecommendation": {
+                      "text": "Generate AI Recommendation",
+                      "press": "invmanagement.ext.controller.AttachmentActions.fetchRecommendation",
+                      "visible": "{= %{processingType} === 'Non-PO' && %{status} === 'DRAFT' && %{IsActiveEntity} === false && (!%{suggestedGLAccount} || !%{suggestedCostCenter} || %{glAccount_code} !== %{suggestedGLAccount} || %{costCenter_code} !== %{suggestedCostCenter}) }",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "DataFieldForAction::InvoiceService.submit"
+                      }
+                    }
+                  },
                   "facets": {
                     "StatusHeaderFacet": {
                       "template": "invmanagement.ext.StatusHeader",
@@ -200,7 +211,7 @@
                     "AIRecommendationCustomSection": {
                       "type": "XMLFragment",
                       "template": "invmanagement.ext.AIRecommendation",
-                      "title": "AI Recommendation",
+                      "title": "Recommendation",
                       "position": {
                         "placement": "After",
                         "anchor": "AccountingAssignment"

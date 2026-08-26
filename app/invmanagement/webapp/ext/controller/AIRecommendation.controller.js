@@ -9,6 +9,9 @@ sap.ui.define([
 
     return ControllerExtension.extend("invmanagement.ext.controller.AIRecommendation", {
         override: {
+            onInit: function () {
+                this.base.getView().setModel(new JSONModel(), "ai");
+            },
             routing: {
                 onAfterBinding: async function (oBindingContext) {
                     await this._refreshAIModel(oBindingContext);
@@ -47,13 +50,7 @@ sap.ui.define([
         },
 
         _refreshAIModel: async function (oBindingContext) {
-            const oView = this.base.getView();
-            let oAIModel = oView.getModel("ai");
-
-            if (!oAIModel) {
-                oAIModel = new JSONModel();
-                oView.setModel(oAIModel, "ai");
-            }
+            const oAIModel = this.base.getView().getModel("ai");
 
             try {
                 const [

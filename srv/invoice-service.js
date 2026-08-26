@@ -397,7 +397,7 @@ console.log(" *** " , lineItems)
             costCenter_code: costCenter.code
         }).where({ ID });
 
-        req.notify('AI recommendation adopted successfully');
+        req.notify('Recommendation Applied Successfully');
     });
 
     this.after('READ', [Invoices.drafts, Invoices], async (result, req) => {

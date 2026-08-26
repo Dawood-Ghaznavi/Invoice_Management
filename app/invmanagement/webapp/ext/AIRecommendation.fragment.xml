@@ -12,7 +12,7 @@
         <HBox
             alignItems="Center"
             justifyContent="SpaceBetween"
-            class="sapUiSmallMarginBottom">
+            class="sapUiTinyMarginBottom">
 
             <HBox alignItems="Center">
                 <core:Icon
@@ -22,12 +22,12 @@
 
                 <VBox>
                     <Title
-                        text="AI Accounting Recommendation"
+                        text="Suggested Account Assignment"
                         level="H3"
                         titleStyle="H4" />
 
                     <Text
-                        text="AI-assisted account assignment"
+                        text="AI-assisted suggestion"
                         class="textMuted" />
                 </VBox>
             </HBox>
@@ -42,9 +42,9 @@
 
         <!-- Short explanation -->
         <Text
-            text="AI analyzed this Non-PO invoice and the available accounting assignments to recommend the best match."
+            text="Based on the invoice details and available accounting assignments, this is the best match."
             wrapping="true"
-            class="sapUiSmallMarginBottom textMuted" />
+            class="sapUiTinyMarginBottom textMuted" />
 
 
         <!-- Main content -->
@@ -57,7 +57,7 @@
             <VBox class="aiSuggestionBox sapUiContentPadding">
 
                 <Label
-                    text="Recommended G/L Account"
+                    text="G/L Account"
                     design="Bold"
                     class="sapUiTinyMarginBottom" />
 
@@ -72,7 +72,7 @@
 
 
                 <Label
-                    text="Recommended Cost Center"
+                    text="Cost Center"
                     design="Bold"
                     class="sapUiTinyMarginBottom" />
 
@@ -92,13 +92,13 @@
             <VBox class="sapUiContentPadding">
 
                 <Label
-                    text="Recommendation Confidence"
+                    text="Confidence"
                     design="Bold"
                     class="sapUiTinyMarginBottom" />
 
                 <HBox
                     alignItems="Center"
-                    class="sapUiMediumMarginBottom">
+                    class="sapUiSmallMarginBottom">
 
                     <micro:RadialMicroChart
                         percentage="{ai>/confidence}"
@@ -141,7 +141,7 @@
 
 
                 <Label
-                    text="Why this recommendation?"
+                    text="Rationale"
                     design="Bold"
                     class="sapUiTinyMarginBottom" />
 
@@ -158,13 +158,21 @@
         <!-- Action -->
         <HBox
             justifyContent="End"
-            class="sapUiMediumMarginTop">
+            class="sapUiSmallMarginTop">
 
             <Button
                 text="Apply Recommendation"
                 type="Emphasized"
                 icon="sap-icon://accept"
+                visible="{= %{glAccount_code} !== %{ai>/glAccount} || %{costCenter_code} !== %{ai>/costCenter} }"
                 press=".extension.invmanagement.ext.controller.AIRecommendation.onApplyAiRecommendation" />
+
+            <ObjectStatus
+                text="Applied"
+                state="Success"
+                icon="sap-icon://sys-enter-2"
+                inverted="true"
+                visible="{= %{glAccount_code} === %{ai>/glAccount} &amp;&amp; %{costCenter_code} === %{ai>/costCenter} }" />
 
         </HBox>
 
