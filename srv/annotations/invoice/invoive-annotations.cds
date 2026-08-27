@@ -45,6 +45,7 @@ annotate service.Invoices with {
     );
 
     senderName                 @(title: 'Supplier');
+    supplier                   @(title: 'Supplier ID');
     senderAddress              @(
         title           : 'Supplier Address',
         UI.MultiLineText: true
@@ -262,6 +263,10 @@ annotate service.Invoices with @(
             {
                 $Type: 'UI.DataField',
                 Value: senderName
+            },
+            {
+                $Type: 'UI.DataField',
+                Value: supplier
             },
             {
                 $Type: 'UI.DataField',

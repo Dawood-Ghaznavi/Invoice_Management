@@ -9,7 +9,8 @@ service RemoteService {
                 CompanyCode         as companyCode,
                 Supplier            as supplier,
                 InvoicingParty      as invoicingParty,
-                DocumentCurrency    as documentCurrency
+                DocumentCurrency    as documentCurrency,
+                PurchasingProcessingStatus as processingStatus
         };
 
     entity PurchaseOrderItem as

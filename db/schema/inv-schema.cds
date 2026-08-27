@@ -38,6 +38,7 @@ entity Invoices : cuid, managed {
     senderAddress              : String;
     invoicingParty             : String;
 
+    supplier                   : String(10);
     purchaseOrder              : Association to remoteService.PurchaseOrder;
 
     glAccount                  : Association to masterdata.GLAccounts;
@@ -85,5 +86,11 @@ entity CostCenters {
         description : String(255);
         companyCode : String(4);
         isActive    : Boolean default true;
+}
+
+entity SupplierContacts : managed {
+    key email      : String(255);
+    key supplier   : String(10);
+        isActive   : Boolean default true;
 }
 }

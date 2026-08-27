@@ -4,6 +4,8 @@
   "dependencies": {
     "@cap-js/attachments": "^4.0.0",
     "@cap-js/hana": "^2",
+    "@cap-js/mcp": "^1.4.3",
+    "@modelcontextprotocol/client": "^2.0.0",
     "@sap-cloud-sdk/connectivity": "^4",
     "@sap-cloud-sdk/http-client": "^4",
     "@sap-cloud-sdk/resilience": "^4",
@@ -28,6 +30,9 @@
   },
   "private": true,
   "cds": {
+    "mcp": {
+      "per_action_tool": true
+    },
     "requires": {
       "db": {
         "kind": "hana"
@@ -60,6 +65,19 @@
         "credentials": {
           "destination": "GPT",
           "requestTimeout": 30000
+        }
+      },
+      "[development]": {
+        "auth": {
+          "kind": "mocked",
+          "users": {
+            "dawood.ghaznavi@test.com": {
+              "password": "test",
+              "roles": [
+                "Supplier"
+              ]
+            }
+          }
         }
       },
       "[production]": {
