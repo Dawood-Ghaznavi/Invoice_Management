@@ -7,9 +7,21 @@
 @requires: 'authenticated-user'
 service SupplierChatService {
 
+    type SupplierProfile {
+        fullName : String(150);
+    }
+
+    /**
+     * Returns the display name of the authenticated supplier contact.
+     */
+    function getProfile() returns SupplierProfile;
+
     /**
      * Answers a supplier question using the read-only Supplier MCP tools.
      */
-    action ask(question: LargeString) returns LargeString;
+    action ask(
+        question : LargeString,
+        history  : LargeString
+    ) returns LargeString;
 
 }

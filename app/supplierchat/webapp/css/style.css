@@ -1,1 +1,268 @@
-/* Custom chat styles will be added with the chat interface. */
+.supplierChatPage,
+.supplierChatPage > section,
+.supplierChatPage .sapMPageCont {
+    height: 100%;
+}
+
+.supplierChatPage .sapMPageCont {
+    overflow: hidden;
+}
+
+.supplierChatShell {
+    height: 100%;
+    min-height: 0;
+    background: #ffffff;
+}
+
+.supplierChatSidebar {
+    box-sizing: border-box;
+    width: 19%;
+    min-width: 15rem;
+    max-width: 19rem;
+    height: 100%;
+    padding: 1.5rem 1rem;
+    background: #f7f8fa;
+    border-right: 1px solid #e5e7eb;
+}
+
+.supplierProfile {
+    gap: 0.75rem;
+    padding: 0 0.5rem 1.75rem;
+}
+
+.supplierProfileAvatar,
+.supplierAssistantAvatar {
+    background: #e8eef8;
+    color: #174a7c;
+}
+
+.supplierProfileDetails {
+    min-width: 0;
+}
+
+.supplierProfileLabel {
+    color: #6a6d70;
+    font-size: 0.75rem;
+}
+
+.supplierProfileName {
+    max-width: 11rem;
+    margin-top: 0.1rem;
+    font-size: 0.95rem;
+}
+
+.supplierChatsTitle {
+    margin: 0 0.65rem 0.5rem;
+    color: #5f6368;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.supplierConversationList,
+.supplierConversationList .sapMListUl {
+    background: transparent;
+}
+
+.supplierConversationItem {
+    border-radius: 0.65rem;
+    background: #e9eef5;
+}
+
+.supplierConversationItem .sapMLIBContent {
+    padding: 0.75rem;
+}
+
+.supplierConversationIcon {
+    margin-right: 0.65rem;
+    color: #174a7c;
+    font-size: 1rem;
+}
+
+.supplierConversationText {
+    color: #1d2d3e;
+    font-weight: 600;
+}
+
+.supplierChatMain {
+    min-width: 0;
+    height: 100%;
+    background: #ffffff;
+}
+
+.supplierChatHeader {
+    flex: 0 0 auto;
+    padding: 1.35rem 2rem 1rem;
+    border-bottom: 1px solid #edf0f2;
+}
+
+.supplierChatTitle {
+    color: #1d2d3e;
+    font-size: 1.35rem;
+}
+
+.supplierChatSubtitle {
+    margin-top: 0.25rem;
+    color: #6a6d70;
+}
+
+.supplierMessageScroller {
+    min-height: 0;
+}
+
+.supplierConversationColumn {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 54rem;
+    min-height: 100%;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.supplierEmptyState {
+    margin: auto;
+}
+
+.supplierPromptList {
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.supplierPromptButton .sapMBtnInner {
+    min-height: 2.5rem;
+    padding: 0 1rem;
+    border: 1px solid #d9dfe5;
+    border-radius: 0.7rem;
+    background: #ffffff;
+    color: #174a7c;
+    text-align: left;
+}
+
+.supplierPromptButton .sapMBtnContent {
+    line-height: 2.4rem;
+}
+
+.supplierPromptButton:hover .sapMBtnInner {
+    background: #f5f8fb;
+    border-color: #b7c7d8;
+}
+
+.supplierMessageList,
+.supplierMessageList .sapMListUl {
+    background: transparent;
+}
+
+.supplierMessageItem {
+    border: 0;
+    background: transparent;
+}
+
+.supplierMessageItem .sapMLIBContent {
+    padding: 0;
+}
+
+.supplierUserMessageRow,
+.supplierAssistantMessageRow {
+    width: 100%;
+    margin-bottom: 1.35rem;
+}
+
+.supplierUserMessage {
+    max-width: 72%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem 1rem 0.25rem 1rem;
+    background: #eef3f8;
+    color: #1d2d3e;
+}
+
+.supplierAssistantMessageRow {
+    gap: 0.75rem;
+}
+
+.supplierAssistantAvatar {
+    flex: 0 0 auto;
+    margin-top: 0.1rem;
+}
+
+.supplierAssistantMessage {
+    max-width: 78%;
+    padding-top: 0.35rem;
+    color: #1d2d3e;
+    line-height: 1.55;
+}
+
+.supplierMessageBusy {
+    margin-right: 0.65rem;
+}
+
+.supplierInputDock {
+    flex: 0 0 auto;
+    padding: 0.75rem 1.5rem 1.25rem;
+    background: #ffffff;
+}
+
+.supplierInputBar {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 54rem;
+    margin: 0 auto;
+    padding: 0.45rem;
+    gap: 0.5rem;
+    border: 1px solid #d5dadd;
+    border-radius: 0.9rem;
+    background: #ffffff;
+    box-shadow: 0 0.25rem 1rem rgba(34, 53, 72, 0.08);
+}
+
+.supplierMessageInput .sapMInputBaseContentWrapper {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.supplierMessageInput textarea {
+    padding: 0.55rem 0.65rem;
+}
+
+.supplierSendButton .sapMBtnInner {
+    border-radius: 0.65rem;
+}
+
+@media (max-width: 900px) {
+    .supplierChatSidebar {
+        display: none;
+    }
+
+    .supplierChatHeader {
+        padding-right: 1.25rem;
+        padding-left: 1.25rem;
+    }
+
+    .supplierConversationColumn {
+        padding: 1.5rem 1rem;
+    }
+
+    .supplierInputDock {
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+
+    .supplierUserMessage,
+    .supplierAssistantMessage {
+        max-width: 88%;
+    }
+}
+
+@media (max-width: 600px) {
+    .supplierChatTitle {
+        font-size: 1.15rem;
+    }
+
+    .supplierChatSubtitle {
+        font-size: 0.85rem;
+    }
+
+    .supplierSendButton .sapMBtnContent {
+        display: none;
+    }
+}

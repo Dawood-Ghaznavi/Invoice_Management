@@ -91,6 +91,7 @@ entity CostCenters {
 entity SupplierContacts : managed {
     key email      : String(255);
     key supplier   : String(10);
+        fullName   : String(150);
         isActive   : Boolean default true;
 }
 }

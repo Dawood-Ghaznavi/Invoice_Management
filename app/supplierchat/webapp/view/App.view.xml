@@ -2,20 +2,227 @@
     controllerName="intelliinvoice.supplierchat.controller.App"
     displayBlock="true"
     xmlns="sap.m"
+    xmlns:core="sap.ui.core"
     xmlns:mvc="sap.ui.core.mvc">
     <App id="app">
         <Page
             id="supplierChatPage"
-            title="{i18n>appTitle}">
+            class="supplierChatPage"
+            enableScrolling="false"
+            showHeader="false">
             <content>
-                <VBox
-                    class="sapUiResponsiveContentPadding"
+                <HBox
+                    class="supplierChatShell"
+                    fitContainer="true"
                     renderType="Bare">
-                    <Title
-                        text="{i18n>pageTitle}"
-                        level="H2" />
-                    <Text text="{i18n>pageDescription}" />
-                </VBox>
+                    <VBox
+                        class="supplierChatSidebar"
+                        renderType="Bare">
+                        <HBox
+                            class="supplierProfile"
+                            alignItems="Center"
+                            renderType="Bare">
+                            <Avatar
+                                class="supplierProfileAvatar"
+                                displaySize="S"
+                                fallbackIcon="sap-icon://person-placeholder" />
+                            <VBox
+                                class="supplierProfileDetails"
+                                renderType="Bare">
+                                <Label
+                                    class="supplierProfileLabel"
+                                    text="{i18n>signedInAs}" />
+                                <Title
+                                    class="supplierProfileName"
+                                    level="H5"
+                                    text="{= ${chat>/profile/fullName} || ${i18n>defaultContactName} }" />
+                            </VBox>
+                        </HBox>
+
+                        <Title
+                            class="supplierChatsTitle"
+                            level="H6"
+                            text="{i18n>chatsTitle}" />
+                        <List
+                            class="supplierConversationList"
+                            items="{chat>/conversations}"
+                            mode="None"
+                            showSeparators="None">
+                            <CustomListItem
+                                class="supplierConversationItem"
+                                press=".onConversationSelect"
+                                type="Active">
+                                <HBox
+                                    alignItems="Center"
+                                    renderType="Bare">
+                                    <core:Icon
+                                        class="supplierConversationIcon"
+                                        src="sap-icon://discussion-2" />
+                                    <Text
+                                        class="supplierConversationText"
+                                        text="{chat>title}" />
+                                </HBox>
+                            </CustomListItem>
+                        </List>
+                    </VBox>
+
+                    <VBox
+                        class="supplierChatMain"
+                        fitContainer="true"
+                        renderType="Bare">
+                        <layoutData>
+                            <FlexItemData
+                                growFactor="1"
+                                shrinkFactor="1" />
+                        </layoutData>
+
+                        <VBox
+                            class="supplierChatHeader"
+                            renderType="Bare">
+                            <Title
+                                class="supplierChatTitle"
+                                level="H2"
+                                text="{i18n>assistantTitle}" />
+                            <Text
+                                class="supplierChatSubtitle"
+                                text="{i18n>assistantSubtitle}" />
+                        </VBox>
+
+                        <ScrollContainer
+                            id="messageScroller"
+                            class="supplierMessageScroller"
+                            height="100%"
+                            horizontal="false"
+                            vertical="true">
+                            <layoutData>
+                                <FlexItemData
+                                    baseSize="0"
+                                    growFactor="1"
+                                    shrinkFactor="1" />
+                            </layoutData>
+                            <VBox
+                                class="supplierConversationColumn"
+                                renderType="Bare">
+                                <IllustratedMessage
+                                    class="supplierEmptyState"
+                                    description="{i18n>emptyStateDescription}"
+                                    illustrationType="sapIllus-Spot-SearchEarth"
+                                    title="{i18n>emptyStateTitle}"
+                                    visible="{= !${chat>/hasMessages} }">
+                                    <additionalContent>
+                                        <VBox
+                                            class="supplierPromptList"
+                                            renderType="Bare">
+                                            <Button
+                                                class="supplierPromptButton"
+                                                press=".onExamplePrompt"
+                                                text="{i18n>promptOpenPOs}"
+                                                type="Transparent" />
+                                            <Button
+                                                class="supplierPromptButton"
+                                                press=".onExamplePrompt"
+                                                text="{i18n>promptInvoiceStatus}"
+                                                type="Transparent" />
+                                            <Button
+                                                class="supplierPromptButton"
+                                                press=".onExamplePrompt"
+                                                text="{i18n>promptRejectedInvoices}"
+                                                type="Transparent" />
+                                        </VBox>
+                                    </additionalContent>
+                                </IllustratedMessage>
+
+                                <List
+                                    class="supplierMessageList"
+                                    items="{chat>/activeConversation/messages}"
+                                    showNoData="false"
+                                    showSeparators="None"
+                                    visible="{chat>/hasMessages}">
+                                    <CustomListItem class="supplierMessageItem">
+                                        <VBox renderType="Bare">
+                                            <HBox
+                                                class="supplierUserMessageRow"
+                                                justifyContent="End"
+                                                renderType="Bare"
+                                                visible="{= ${chat>role} === 'user' }">
+                                                <VBox
+                                                    class="supplierUserMessage"
+                                                    renderType="Bare">
+                                                    <Text
+                                                        renderWhitespace="true"
+                                                        text="{chat>text}"
+                                                        wrapping="true" />
+                                                </VBox>
+                                            </HBox>
+
+                                            <HBox
+                                                class="supplierAssistantMessageRow"
+                                                alignItems="Start"
+                                                renderType="Bare"
+                                                visible="{= ${chat>role} === 'assistant' }">
+                                                <Avatar
+                                                    class="supplierAssistantAvatar"
+                                                    displaySize="XS"
+                                                    fallbackIcon="sap-icon://discussion-2" />
+                                                <VBox
+                                                    class="supplierAssistantMessage"
+                                                    renderType="Bare">
+                                                    <HBox
+                                                        alignItems="Center"
+                                                        renderType="Bare"
+                                                        visible="{= !!${chat>loading} }">
+                                                        <BusyIndicator
+                                                            class="supplierMessageBusy"
+                                                            size="1rem" />
+                                                        <Text text="{chat>text}" />
+                                                    </HBox>
+                                                    <Text
+                                                        renderWhitespace="true"
+                                                        text="{chat>text}"
+                                                        visible="{= !${chat>loading} }"
+                                                        wrapping="true" />
+                                                </VBox>
+                                            </HBox>
+                                        </VBox>
+                                    </CustomListItem>
+                                </List>
+                            </VBox>
+                        </ScrollContainer>
+
+                        <VBox
+                            class="supplierInputDock"
+                            renderType="Bare">
+                            <HBox
+                                class="supplierInputBar"
+                                alignItems="End"
+                                renderType="Bare">
+                                <TextArea
+                                    id="messageInput"
+                                    class="supplierMessageInput"
+                                    enabled="{= !${chat>/isLoading} }"
+                                    growing="true"
+                                    growingMaxLines="4"
+                                    placeholder="{i18n>messagePlaceholder}"
+                                    rows="1"
+                                    value="{chat>/draft}"
+                                    valueLiveUpdate="true">
+                                    <layoutData>
+                                        <FlexItemData
+                                            growFactor="1"
+                                            shrinkFactor="1" />
+                                    </layoutData>
+                                </TextArea>
+                                <Button
+                                    class="supplierSendButton"
+                                    enabled="{= !!${chat>/draft} &amp;&amp; !${chat>/isLoading} }"
+                                    icon="sap-icon://paper-plane"
+                                    press=".onSend"
+                                    text="{i18n>send}"
+                                    type="Emphasized" />
+                            </HBox>
+                        </VBox>
+                    </VBox>
+                </HBox>
             </content>
         </Page>
     </App>

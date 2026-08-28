@@ -1,5 +1,5 @@
-email,supplier,isActive
-dawood.ghaznavi@test.com,17300001,true
-dawood.ghaznavi@test.com,17300002,true
-john.doe@test.com,17300080,true
-john.doe@test.com,USSU_V8000,true
+email,supplier,fullName,isActive
+dawood.ghaznavi@test.com,17300001,Dawood Ghaznavi,true
+dawood.ghaznavi@test.com,17300002,Dawood Ghaznavi,true
+john.doe@test.com,17300080,John Doe,true
+john.doe@test.com,USSU_V8000,John Doe,true

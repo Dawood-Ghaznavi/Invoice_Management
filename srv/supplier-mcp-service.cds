@@ -8,7 +8,7 @@ using { RemoteService as remoteService } from './remote-service';
 @title: 'Supplier Self-Service'
 @description: 'Supplier-facing invoice and purchase-order information for answering status and document-summary questions.'
 @mcp: 'supplier'
-@mcp.instructions: 'Always use describe before query. Use Invoices for invoice status, amounts, due dates, counts, and invoices needing attention. Use PurchaseOrders for purchase-order status, lookup, and counts. Never ask for or guess a supplier ID; CAP determines the allowed suppliers from the authenticated user. This service is read-only.'
+@mcp.instructions: 'Always use describe before query. Use Invoices for invoice status, amounts, due dates, counts, and invoices needing attention. Use generic query on PurchaseOrders only for direct PO header lookups such as a specific PO number, status, date, currency, or supplier-visible header information. For every question about whether POs are open, listing open POs, counting open POs, or filtering by open status, always use getOpenPurchaseOrders. Never infer open status from PurchasingProcessingStatus, processingStatus, or generic PurchaseOrders data. getOpenPurchaseOrders is the single source of truth for the business definition of an open PO. Never ask for or guess a supplier ID; CAP determines the allowed suppliers from the authenticated user. This service is read-only.'
 @requires: 'authenticated-user'
 @cds.query.limit: {
     default: 20,
@@ -57,7 +57,10 @@ service SupplierMCPService {
 
     /**
      * Purchase-order headers visible to the authenticated supplier.
-     * Use for purchase-order status, lookup, counts, dates, company codes, suppliers, and currencies.
+     * Use generic query on this entity only for direct PO header lookups such as a specific
+     * PO number, status, date, company code, supplier-visible information, or currency.
+     * Never use this entity to decide whether POs are open or to list, count, or filter open POs.
+     * Use getOpenPurchaseOrders for every open-PO question.
      */
     @title: 'Purchase Orders'
     @readonly
@@ -74,14 +77,15 @@ service SupplierMCPService {
             invoicingParty,
         /** ISO document currency code. */
             documentCurrency,
-        /** SAP purchasing-document processing state; this does not by itself determine invoiceability. */
+        /** SAP purchasing-document processing state. Never use this value to determine whether a PO is open. */
             processingStatus
     };
 
     /**
-     * Returns purchase-order headers belonging to the authenticated user's
-     * assigned suppliers where at least one non-deleted item is expected
-     * to be invoiced and has not been finally invoiced
+     * Single source of truth for the business definition of an open purchase order.
+     * Always use this function to determine whether POs are open and to list, count,
+     * or filter open POs. A PO is returned when at least one assigned-supplier item
+     * is non-deleted, expected to be invoiced, and not finally invoiced.
      */
     function getOpenPurchaseOrders() returns many PurchaseOrders;
 
