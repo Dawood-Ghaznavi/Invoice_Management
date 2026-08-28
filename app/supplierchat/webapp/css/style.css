@@ -101,11 +101,6 @@
     font-size: 1.35rem;
 }
 
-.supplierChatSubtitle {
-    margin-top: 0.25rem;
-    color: #6a6d70;
-}
-
 .supplierMessageScroller {
     min-height: 0;
 }
@@ -314,10 +309,6 @@
 @media (max-width: 600px) {
     .supplierChatTitle {
         font-size: 1.15rem;
-    }
-
-    .supplierChatSubtitle {
-        font-size: 0.85rem;
     }
 
     .supplierSendButton .sapMBtnContent {

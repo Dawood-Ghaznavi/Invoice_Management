@@ -83,9 +83,6 @@
                                 class="supplierChatTitle"
                                 level="H2"
                                 text="{i18n>assistantTitle}" />
-                            <Text
-                                class="supplierChatSubtitle"
-                                text="{i18n>assistantSubtitle}" />
                         </VBox>
 
                         <ScrollContainer
