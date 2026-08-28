@@ -116,7 +116,7 @@
     max-width: 54rem;
     min-height: 100%;
     margin: 0 auto;
-    padding: 2rem 1.5rem;
+    padding: 2rem 1.5rem 1rem;
 }
 
 .supplierEmptyState {
@@ -167,6 +167,11 @@
     margin-bottom: 1.35rem;
 }
 
+.supplierMessageItem:last-child .supplierUserMessageRow,
+.supplierMessageItem:last-child .supplierAssistantMessageRow {
+    margin-bottom: 0.5rem;
+}
+
 .supplierUserMessage {
     max-width: 72%;
     padding: 0.75rem 1rem;
@@ -197,7 +202,7 @@
 
 .supplierInputDock {
     flex: 0 0 auto;
-    padding: 0.75rem 1.5rem 1.25rem;
+    padding: 0.6rem 1.5rem 1.25rem;
     background: #ffffff;
 }
 
@@ -239,7 +244,7 @@
     }
 
     .supplierConversationColumn {
-        padding: 1.5rem 1rem;
+        padding: 1.5rem 1rem 0.75rem;
     }
 
     .supplierInputDock {
