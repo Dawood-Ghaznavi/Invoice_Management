@@ -212,6 +212,7 @@
                                                         <BusyIndicator
                                                             class="supplierMessageBusy"
                                                             size="1rem" />
+                                                        <Text text="{chat>text}" />
                                                     </HBox>
                                                     <Text
                                                         renderWhitespace="true"

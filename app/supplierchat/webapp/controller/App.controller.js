@@ -24,30 +24,36 @@ sap.ui.define([
                 isLoading: false
             }), "chat");
 
-            this._messageInputDelegate = {
-                onAfterRendering: function () {
-                    this.byId("messageInput").$()
-                        .off("keydown.supplierChat")
-                        .on("keydown.supplierChat", function (event) {
-                            if (event.key === "Enter" && !event.shiftKey) {
-                                event.preventDefault();
-                                this.onSend();
-                            }
-                        }.bind(this));
-                }.bind(this)
-            };
-            this.byId("messageInput").addEventDelegate(this._messageInputDelegate);
+            this._messageInputDelegates = ["emptyMessageInput", "messageInput"].map(inputId => {
+                const delegate = {
+                    onAfterRendering: function () {
+                        this.byId(inputId).$()
+                            .off("keydown.supplierChat")
+                            .on("keydown.supplierChat", function (event) {
+                                if (event.key === "Enter" && !event.shiftKey) {
+                                    event.preventDefault();
+                                    this.onSend();
+                                }
+                            }.bind(this));
+                    }.bind(this)
+                };
+
+                this.byId(inputId).addEventDelegate(delegate);
+                return { inputId, delegate };
+            });
 
             this._loadProfile();
         },
 
         onExit: function () {
-            const messageInput = this.byId("messageInput");
+            this._messageInputDelegates.forEach(({ inputId, delegate }) => {
+                const messageInput = this.byId(inputId);
 
-            if (messageInput) {
-                messageInput.$().off("keydown.supplierChat");
-                messageInput.removeEventDelegate(this._messageInputDelegate);
-            }
+                if (messageInput) {
+                    messageInput.$().off("keydown.supplierChat");
+                    messageInput.removeEventDelegate(delegate);
+                }
+            });
         },
 
         onConversationSelect: function (event) {

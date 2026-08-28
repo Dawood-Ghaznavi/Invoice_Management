@@ -216,6 +216,10 @@
     line-height: 1.55;
 }
 
+.supplierMessageBusy {
+    margin-right: 0.65rem;
+}
+
 .supplierInputDock {
     flex: 0 0 auto;
     padding: 0.6rem 1.5rem 1.25rem;
@@ -267,7 +271,7 @@
     height: 2.5rem;
     padding: 0;
     margin-left: 0.15rem;
-    transform: translateY(-6.5px);
+    transform: translateY(-0.5rem);
 }
 
 .supplierSendButton .sapMBtnInner {
