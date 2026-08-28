@@ -89,6 +89,7 @@
     "app/*"
   ],
   "sapux": [
-    "app/invmanagement"
+    "app/invmanagement",
+    "app/supplierchat"
   ]
 }

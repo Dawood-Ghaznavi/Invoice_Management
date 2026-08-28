@@ -1,0 +1,22 @@
+<mvc:View
+    controllerName="intelliinvoice.supplierchat.controller.App"
+    displayBlock="true"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc">
+    <App id="app">
+        <Page
+            id="supplierChatPage"
+            title="{i18n>appTitle}">
+            <content>
+                <VBox
+                    class="sapUiResponsiveContentPadding"
+                    renderType="Bare">
+                    <Title
+                        text="{i18n>pageTitle}"
+                        level="H2" />
+                    <Text text="{i18n>pageDescription}" />
+                </VBox>
+            </content>
+        </Page>
+    </App>
+</mvc:View>

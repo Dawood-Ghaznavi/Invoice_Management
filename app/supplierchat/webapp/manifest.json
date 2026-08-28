@@ -1,0 +1,99 @@
+{
+  "_version": "1.86.0",
+  "sap.app": {
+    "id": "intelliinvoice.supplierchat",
+    "type": "application",
+    "i18n": {
+      "bundleUrl": "i18n/i18n.properties",
+      "supportedLocales": [
+        ""
+      ],
+      "fallbackLocale": ""
+    },
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/supplier-chat/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "supplier-chat": {
+          "semanticObject": "supplier",
+          "action": "chat",
+          "title": "{{supplier-chat.flpTitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "rootView": {
+      "viewName": "intelliinvoice.supplierchat.view.App",
+      "type": "XML",
+      "async": true,
+      "id": "App"
+    },
+    "dependencies": {
+      "minUI5Version": "1.151.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "intelliinvoice.supplierchat.i18n.i18n",
+          "supportedLocales": [
+            ""
+          ],
+          "fallbackLocale": ""
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "earlyRequests": true
+        }
+      }
+    },
+    "resources": {
+      "css": [
+        {
+          "uri": "css/style.css"
+        }
+      ]
+    }
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "intinv"
+  }
+}

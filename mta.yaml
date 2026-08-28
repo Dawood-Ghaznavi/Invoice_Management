@@ -70,9 +70,24 @@ modules:
             - invmanagement.zip
           name: invmanagement
           target-path: resources/
+        - artifacts:
+            - supplierchat.zip
+          name: supplierchat
+          target-path: resources/
   - name: invmanagement
     type: html5
     path: app/invmanagement
+    build-parameters:
+      build-result: dist
+      builder: custom
+      commands:
+        - npm install
+        - npm run build:cf
+      supported-platforms:
+        []
+  - name: supplierchat
+    type: html5
+    path: app/supplierchat
     build-parameters:
       build-result: dist
       builder: custom
