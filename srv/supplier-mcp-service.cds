@@ -8,7 +8,7 @@ using { RemoteService as remoteService } from './remote-service';
 @title: 'Supplier Self-Service'
 @description: 'Supplier-facing invoice and purchase-order information for answering status and document-summary questions.'
 @mcp: 'supplier'
-@mcp.instructions: 'Use describe only as a fallback when the available entity and field descriptions are insufficient to construct a query; do not call it routinely before query. Use Invoices for invoice status, amounts, due dates, counts, and invoices needing attention. Use generic query on PurchaseOrders only for direct PO header lookups such as a specific PO number, status, date, currency, or supplier-visible header information. For every question about whether POs are open, listing open POs, counting open POs, or filtering by open status, always use getOpenPurchaseOrders. Use getInvoiceCountForOpenPurchaseOrders for the exact number of authorized invoices associated with all open POs; never calculate that count from the sampled open-PO list. Never infer open status from PurchasingProcessingStatus, processingStatus, or generic PurchaseOrders data. getOpenPurchaseOrders is the single source of truth for the business definition of an open PO. Never ask for or guess a supplier ID; CAP determines the allowed suppliers from the authenticated user. This service is read-only.'
+@mcp.instructions: 'Use describe only as a fallback when the available entity and field descriptions are insufficient to construct a query; do not call it routinely before query. Use Invoices for invoice status, amounts, due dates, counts, and invoices needing attention. Use generic query on PurchaseOrders only for direct PO header lookups such as a specific PO number, status, date, currency, or supplier-visible header information. For every question about whether POs are open, listing open POs, counting open POs, filtering by open status, or comparing open POs, always use getOpenPurchaseOrders. For normal counts and sample lists, omit includeAll or set it to false because totalCount covers the complete population. Set includeAll to true when the user explicitly asks for every result or when an exact comparison or calculation requires fields from the complete open-PO population, such as oldest, newest, earliest, or latest. Using includeAll for a comparison does not mean the full list should be returned to the user. Use getInvoiceCountForOpenPurchaseOrders for the exact number of authorized invoices associated with all open POs; never calculate that count from the sampled open-PO list. Never infer open status from PurchasingProcessingStatus, processingStatus, or generic PurchaseOrders data. getOpenPurchaseOrders is the single source of truth for the business definition of an open PO. Never ask for or guess a supplier ID; CAP determines the allowed suppliers from the authenticated user. This service is read-only.'
 @requires: 'authenticated-user'
 @cds.query.limit: {
     default: 20,
@@ -115,7 +115,7 @@ service SupplierMCPService {
      * is non-deleted, expected to be invoiced, and not finally invoiced.
      */
     function getOpenPurchaseOrders(
-        /** Set to true only when the user explicitly asks for all or the complete list. */
+        /** Set to true for an explicit complete list or an exact comparison/calculation requiring every open PO; otherwise false. */
         includeAll : Boolean
     ) returns OpenPurchaseOrdersResult;
 
