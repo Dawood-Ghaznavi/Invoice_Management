@@ -8,13 +8,37 @@ using { RemoteService as remoteService } from './remote-service';
 @title: 'Supplier Self-Service'
 @description: 'Supplier-facing invoice and purchase-order information for answering status and document-summary questions.'
 @mcp: 'supplier'
-@mcp.instructions: 'Always use describe before query. Use Invoices for invoice status, amounts, due dates, counts, and invoices needing attention. Use generic query on PurchaseOrders only for direct PO header lookups such as a specific PO number, status, date, currency, or supplier-visible header information. For every question about whether POs are open, listing open POs, counting open POs, or filtering by open status, always use getOpenPurchaseOrders. Never infer open status from PurchasingProcessingStatus, processingStatus, or generic PurchaseOrders data. getOpenPurchaseOrders is the single source of truth for the business definition of an open PO. Never ask for or guess a supplier ID; CAP determines the allowed suppliers from the authenticated user. This service is read-only.'
+@mcp.instructions: 'Use describe only as a fallback when the available entity and field descriptions are insufficient to construct a query; do not call it routinely before query. Use Invoices for invoice status, amounts, due dates, counts, and invoices needing attention. Use generic query on PurchaseOrders only for direct PO header lookups such as a specific PO number, status, date, currency, or supplier-visible header information. For every question about whether POs are open, listing open POs, counting open POs, or filtering by open status, always use getOpenPurchaseOrders. Use getInvoiceCountForOpenPurchaseOrders for the exact number of authorized invoices associated with all open POs; never calculate that count from the sampled open-PO list. Never infer open status from PurchasingProcessingStatus, processingStatus, or generic PurchaseOrders data. getOpenPurchaseOrders is the single source of truth for the business definition of an open PO. Never ask for or guess a supplier ID; CAP determines the allowed suppliers from the authenticated user. This service is read-only.'
 @requires: 'authenticated-user'
 @cds.query.limit: {
     default: 20,
     max    : 100
 }
 service SupplierMCPService {
+
+    type OpenPurchaseOrder {
+        purchaseOrder     : String(10);
+        purchaseOrderDate : Date;
+        companyCode       : String(4);
+        supplier          : String(10);
+        invoicingParty    : String(10);
+        documentCurrency  : String(3);
+        processingStatus  : String(2);
+    }
+
+    type OpenPurchaseOrdersResult {
+        /** Total number of open purchase orders before response sampling. */
+        totalCount     : Integer;
+        /** First five open purchase orders by default, or every result when includeAll is true. */
+        purchaseOrders : many OpenPurchaseOrder;
+    }
+
+    type OpenPurchaseOrderInvoiceCountResult {
+        /** Total number of open purchase orders for the authenticated supplier. */
+        openPurchaseOrderCount : Integer;
+        /** Number of authorized invoices associated with those open purchase orders. */
+        invoiceCount           : Integer;
+    }
 
     /**
      * Supplier-visible invoice headers.
@@ -46,8 +70,11 @@ service SupplierMCPService {
             senderName,
         /** SAP supplier identifier used by CAP to enforce supplier isolation. */
             supplier,
-        /** Related purchase order for PO invoices; empty for Non-PO invoices. */
+        /** Internal association retained only so CAP can resolve its managed foreign key. */
+        @cds.api.ignore
             purchaseOrder,
+        /** Scalar SAP purchase-order number for PO invoices; empty for Non-PO invoices. */
+        virtual purchaseOrderNumber : String(10),
         /** Whether the invoice follows the PO or Non-PO process. */
             processingType,
         /** Workflow status: DRAFT, IN_APPROVAL, APPROVED, REJECTED, or POSTED. */
@@ -87,6 +114,17 @@ service SupplierMCPService {
      * or filter open POs. A PO is returned when at least one assigned-supplier item
      * is non-deleted, expected to be invoiced, and not finally invoiced.
      */
-    function getOpenPurchaseOrders() returns many PurchaseOrders;
+    function getOpenPurchaseOrders(
+        /** Set to true only when the user explicitly asks for all or the complete list. */
+        includeAll : Boolean
+    ) returns OpenPurchaseOrdersResult;
+
+    /**
+     * Returns the exact number of authorized invoices associated with all open purchase orders.
+     * The complete open-PO set is processed inside CAP and is never returned to the caller.
+     * Use for questions such as "How many invoices do I have against my open POs?"
+     */
+    function getInvoiceCountForOpenPurchaseOrders()
+        returns OpenPurchaseOrderInvoiceCountResult;
 
 }
