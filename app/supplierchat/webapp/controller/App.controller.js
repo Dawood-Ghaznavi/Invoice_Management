@@ -175,6 +175,16 @@ sap.ui.define([
             }[status] || "None";
         },
 
+        formatInvoiceStatusIcon: function (status) {
+            return {
+                DRAFT: "sap-icon://edit",
+                IN_APPROVAL: "sap-icon://pending",
+                APPROVED: "sap-icon://accept",
+                POSTED: "sap-icon://complete",
+                REJECTED: "sap-icon://decline"
+            }[status] || "";
+        },
+
         _loadProfile: async function () {
             const profileFunction = this.getView().getModel().bindContext("/getProfile(...)");
 

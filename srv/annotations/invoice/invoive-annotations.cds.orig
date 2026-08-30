@@ -175,12 +175,6 @@ annotate service.Invoices with @(
             ![@UI.Hidden]: (status != 'DRAFT' or $draft.IsActiveEntity == false)
         },
         {
-            $Type     : 'UI.DataFieldForAction',
-            Label     : 'Accept',
-            Action    : 'InvoiceService.accept',
-            ![@UI.Hidden]: (status != 'IN_APPROVAL' or $draft.IsActiveEntity == false)
-        },
-        {
             $Type: 'UI.DataField',
             Value: documentNumber
         },

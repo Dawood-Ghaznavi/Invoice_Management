@@ -1,6 +1,6 @@
 appTitle=Supplier Self-Service
 appDescription=Supplier invoice and purchase-order assistance
-assistantTitle=Supplier Desk
+assistantTitle=Supplier Self-Service Assistant
 signedInAs=Signed in as
 defaultContactName=Supplier
 chatsTitle=Chats
@@ -9,7 +9,7 @@ emptyStateTitle=What can I help you with?
 promptOpenPOs=Which of my POs are still open?
 promptInvoiceStatus=What is the status of my invoice?
 promptRejectedInvoices=Show my rejected invoices
-messagePlaceholder=Ask about your POs and invoices…
+messagePlaceholder=Ask about invoices or purchase orders...
 send=Send
 loadingMessage=Checking your SAP data...
 errorMessage=I couldn't retrieve that information right now. Please try again.

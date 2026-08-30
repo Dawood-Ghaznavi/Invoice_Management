@@ -8,6 +8,7 @@ service InvoiceService {
     entity Invoices as projection on invoice.Invoices actions {
         action extract();
         action submit();
+        action accept();
         action fetchRec();
         action adopt();
     };

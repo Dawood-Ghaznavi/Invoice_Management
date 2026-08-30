@@ -249,27 +249,6 @@ console.log(" *** " , lineItems)
         req.notify('Invoice submitted for approval');
     });
 
-    this.on('accept', Invoices, async req => {
-        const { ID } = req.params[0];
-        const invoice = await SELECT.one.from(Invoices)
-            .columns('status')
-            .where({ ID });
-
-        if (!invoice) {
-            return req.error({ message: 'Invoice not found', status: 404 });
-        }
-
-        if (invoice.status !== 'IN_APPROVAL') {
-            return req.error({ message: 'Only invoices in approval can be accepted', status: 400 });
-        }
-
-        await UPDATE(Invoices)
-            .set({ status: 'APPROVED' })
-            .where({ ID });
-
-        req.notify('Invoice approved successfully');
-    });
-
     this.on('fetchRec', Invoices.drafts, async req => {
         const { ID } = req.params[0];
         const invoice = await SELECT.one.from(Invoices.drafts)
