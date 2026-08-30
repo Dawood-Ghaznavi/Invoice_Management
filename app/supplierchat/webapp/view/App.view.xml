@@ -201,7 +201,13 @@
                                                     fallbackIcon="sap-icon://discussion-2" />
                                                 <VBox
                                                     class="supplierAssistantMessage"
-                                                    renderType="Bare">
+                                                    renderType="Bare"
+                                                    width="100%">
+                                                    <layoutData>
+                                                        <FlexItemData
+                                                            growFactor="1"
+                                                            shrinkFactor="1" />
+                                                    </layoutData>
                                                     <HBox
                                                         alignItems="Center"
                                                         renderType="Bare"
@@ -211,10 +217,118 @@
                                                             size="1rem" />
                                                     </HBox>
                                                     <Text
+                                                        class="supplierAssistantText"
                                                         renderWhitespace="true"
                                                         text="{chat>text}"
                                                         visible="{= !${chat>loading} }"
                                                         wrapping="true" />
+
+                                                    <Table
+                                                        autoPopinMode="true"
+                                                        class="supplierResultTable"
+                                                        fixedLayout="true"
+                                                        items="{chat>purchaseOrders}"
+                                                        showNoData="false"
+                                                        showSeparators="Inner"
+                                                        visible="{= !${chat>loading} &amp;&amp; ${chat>presentation} === 'purchaseOrderTable' }"
+                                                        width="100%">
+                                                        <columns>
+                                                            <Column
+                                                                importance="High"
+                                                                width="11rem">
+                                                                <Text text="{i18n>purchaseOrderColumn}" />
+                                                            </Column>
+                                                            <Column
+                                                                demandPopin="true"
+                                                                importance="Medium"
+                                                                minScreenWidth="Tablet">
+                                                                <Text text="{i18n>purchaseOrderDateColumn}" />
+                                                            </Column>
+                                                            <Column
+                                                                demandPopin="true"
+                                                                importance="Low"
+                                                                minScreenWidth="Desktop">
+                                                                <Text text="{i18n>companyCodeColumn}" />
+                                                            </Column>
+                                                            <Column
+                                                                demandPopin="true"
+                                                                importance="Medium"
+                                                                minScreenWidth="Tablet">
+                                                                <Text text="{i18n>currencyColumn}" />
+                                                            </Column>
+                                                        </columns>
+                                                        <items>
+                                                            <ColumnListItem vAlign="Middle">
+                                                                <cells>
+                                                                    <ObjectIdentifier title="{chat>purchaseOrder}" />
+                                                                    <Text text="{chat>purchaseOrderDate}" />
+                                                                    <Text text="{chat>companyCode}" />
+                                                                    <Text text="{chat>documentCurrency}" />
+                                                                </cells>
+                                                            </ColumnListItem>
+                                                        </items>
+                                                    </Table>
+
+                                                    <Table
+                                                        autoPopinMode="true"
+                                                        class="supplierResultTable"
+                                                        fixedLayout="true"
+                                                        items="{chat>invoices}"
+                                                        showNoData="false"
+                                                        showSeparators="Inner"
+                                                        visible="{= !${chat>loading} &amp;&amp; ${chat>presentation} === 'invoiceTable' }"
+                                                        width="100%">
+                                                        <columns>
+                                                            <Column
+                                                                importance="High"
+                                                                width="13rem">
+                                                                <Text text="{i18n>invoiceColumn}" />
+                                                            </Column>
+                                                            <Column
+                                                                demandPopin="true"
+                                                                importance="Medium"
+                                                                minScreenWidth="Tablet">
+                                                                <Text text="{i18n>documentDateColumn}" />
+                                                            </Column>
+                                                            <Column
+                                                                demandPopin="true"
+                                                                importance="Low"
+                                                                minScreenWidth="Desktop">
+                                                                <Text text="{i18n>dueDateColumn}" />
+                                                            </Column>
+                                                            <Column
+                                                                demandPopin="true"
+                                                                hAlign="End"
+                                                                importance="Medium"
+                                                                minScreenWidth="Tablet">
+                                                                <Text text="{i18n>amountColumn}" />
+                                                            </Column>
+                                                            <Column
+                                                                hAlign="End"
+                                                                importance="High"
+                                                                width="8rem">
+                                                                <Text text="{i18n>statusColumn}" />
+                                                            </Column>
+                                                        </columns>
+                                                        <items>
+                                                            <ColumnListItem vAlign="Middle">
+                                                                <cells>
+                                                                    <ObjectIdentifier
+                                                                        text="{chat>reqNumber}"
+                                                                        title="{chat>documentNumber}" />
+                                                                    <Text text="{chat>documentDate}" />
+                                                                    <Text text="{chat>dueDate}" />
+                                                                    <ObjectNumber
+                                                                        emphasized="false"
+                                                                        number="{chat>grossAmount}"
+                                                                        unit="{chat>currency}" />
+                                                                    <ObjectStatus
+                                                                        state="{path: 'chat>status', formatter: '.formatInvoiceStatusState'}"
+                                                                        text="{path: 'chat>status', formatter: '.formatInvoiceStatusText'}" />
+                                                                </cells>
+                                                            </ColumnListItem>
+                                                        </items>
+                                                    </Table>
                                                 </VBox>
                                             </HBox>
                                         </VBox>

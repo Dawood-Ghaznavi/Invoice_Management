@@ -11,6 +11,37 @@ service SupplierChatService {
         fullName : String(150);
     }
 
+    type ChatPresentation : String enum {
+        text               = 'text';
+        purchaseOrderTable = 'purchaseOrderTable';
+        invoiceTable       = 'invoiceTable';
+    }
+
+    type ChatPurchaseOrder {
+        purchaseOrder     : String(10);
+        purchaseOrderDate : Date;
+        companyCode       : String(4);
+        documentCurrency  : String(3);
+    }
+
+    type ChatInvoice {
+        reqNumber      : String;
+        documentNumber : String;
+        documentDate   : Date;
+        dueDate        : Date;
+        grossAmount    : Decimal(15,2);
+        currency       : String(3);
+        status         : String;
+    }
+
+    type ChatResponse {
+        text           : LargeString;
+        presentation   : ChatPresentation;
+        totalCount     : Integer;
+        purchaseOrders : many ChatPurchaseOrder;
+        invoices       : many ChatInvoice;
+    }
+
     /**
      * Returns the display name of the authenticated supplier contact.
      */
@@ -22,6 +53,6 @@ service SupplierChatService {
     action ask(
         question : LargeString,
         history  : LargeString
-    ) returns LargeString;
+    ) returns ChatResponse;
 
 }

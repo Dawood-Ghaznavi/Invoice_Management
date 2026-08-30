@@ -113,9 +113,15 @@ sap.ui.define([
 
             try {
                 await action.execute("$direct");
+                const response = action.getBoundContext().getObject();
+
                 messages[messages.length - 1] = {
                     role: "assistant",
-                    text: action.getBoundContext().getProperty("value"),
+                    text: response.text,
+                    presentation: response.presentation || "text",
+                    totalCount: response.totalCount || 0,
+                    purchaseOrders: response.purchaseOrders || [],
+                    invoices: response.invoices || [],
                     loading: false
                 };
             } catch (error) {
@@ -131,6 +137,42 @@ sap.ui.define([
                 chatModel.setProperty("/isLoading", false);
                 this._scrollToLatest();
             }
+        },
+
+        formatInvoiceStatusText: function (status) {
+            const knownStatus = {
+                DRAFT: "Draft",
+                IN_APPROVAL: "In approval",
+                APPROVED: "Approved",
+                POSTED: "Posted",
+                REJECTED: "Rejected"
+            }[status];
+
+            if (knownStatus || !status) {
+                return knownStatus || "";
+            }
+
+            const humanizedStatus = String(status)
+                .trim()
+                .replace(/([a-z0-9])([A-Z])/g, function (match, left, right) {
+                    return left + " " + right;
+                })
+                .replace(/[_-]+/g, " ")
+                .replace(/\s+/g, " ")
+                .toLowerCase();
+
+            return humanizedStatus.charAt(0).toUpperCase() +
+                humanizedStatus.slice(1);
+        },
+
+        formatInvoiceStatusState: function (status) {
+            return {
+                DRAFT: "Information",
+                IN_APPROVAL: "Warning",
+                APPROVED: "Success",
+                POSTED: "Success",
+                REJECTED: "Error"
+            }[status] || "None";
         },
 
         _loadProfile: async function () {

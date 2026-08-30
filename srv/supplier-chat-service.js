@@ -212,9 +212,27 @@ module.exports = async function () {
                 'Use describe only as a fallback when the entity and field descriptions supplied with query are insufficient. Do not call describe before every query.',
                 'If an open-PO result is large, state the total count and show only the first five by default. Return the complete list only when the user explicitly asks for all, every, the full list, or the complete list.',
                 'Respond in concise, natural plain text only. Do not use Markdown syntax, bold markers, headings, backticks, or Markdown tables.',
+                'For a purchase-order list query, select purchaseOrder, purchaseOrderDate, companyCode, and documentCurrency. For an invoice list query, select reqNumber, documentNumber, documentDate, dueDate, grossAmount, currency, and status.',
+                'For a list request returning multiple purchase orders or invoices, write only a short introduction or count summary and do not enumerate or repeat the individual records because the UI renders them separately.',
+                'For a single record, count, or comparison question, answer normally in text.',
                 'If no matching data is returned, say so clearly.'
             ].join(' ');
             let response;
+            let presentation = 'text';
+            let totalCount = 0;
+            let purchaseOrders = [];
+            let invoices = [];
+            let openPurchaseOrderTable = false;
+            const shortAnswerRequest = /\b(how many|count|number of|oldest|newest|earliest|latest|which one|average|sum|total|minimum|maximum)\b/i.test(question);
+            const singleRecordRequest = /\b(first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|last)\s+(one|po|purchase order|invoice)\b/i.test(question) ||
+                /\b(this|that)\s+(one|po|purchase order|invoice)\b/i.test(question) ||
+                /\b(REQ|INV|NCS)-[A-Z0-9-]+\b/i.test(question) ||
+                /\b\d{10}\b/.test(question);
+            const explicitListRequest = /\b(show|list|display|find|which|what are|give me|all)\b/i.test(question);
+            const pluralListRequest = /\bwhat\b.{0,80}\b(pos|purchase orders|invoices)\b/i.test(question);
+            const tableRequest = !shortAnswerRequest &&
+                !singleRecordRequest &&
+                (explicitListRequest || pluralListRequest);
 
             for (let round = 0; round < 4; round++) {
                 const openAIStartedAt = performance.now();
@@ -259,6 +277,18 @@ module.exports = async function () {
                         args = {};
                     }
 
+                    if ([
+                        'query',
+                        'getOpenPurchaseOrders',
+                        'getInvoiceCountForOpenPurchaseOrders'
+                    ].includes(toolCall.name)) {
+                        presentation = 'text';
+                        totalCount = 0;
+                        purchaseOrders = [];
+                        invoices = [];
+                        openPurchaseOrderTable = false;
+                    }
+
                     const mcpToolStartedAt = performance.now();
                     const result = await client.callTool({
                         name: toolCall.name,
@@ -271,6 +301,61 @@ module.exports = async function () {
                         ),
                         isError: Boolean(result.isError)
                     });
+
+                    if (!result.isError &&
+                        ['query', 'getOpenPurchaseOrders'].includes(toolCall.name)) {
+                        const structuredContent = result.structuredContent || {};
+
+                        if (toolCall.name === 'getOpenPurchaseOrders') {
+                            const toolResult = structuredContent.result || {};
+                            const records = Array.isArray(toolResult.purchaseOrders)
+                                ? toolResult.purchaseOrders
+                                : [];
+
+                            totalCount = Number(toolResult.totalCount ?? records.length);
+
+                            if (tableRequest && records.length > 1) {
+                                presentation = 'purchaseOrderTable';
+                                openPurchaseOrderTable = true;
+                                purchaseOrders = records.map(record => ({
+                                    purchaseOrder: record.purchaseOrder ?? null,
+                                    purchaseOrderDate: record.purchaseOrderDate ?? null,
+                                    companyCode: record.companyCode ?? null,
+                                    documentCurrency: record.documentCurrency ?? null
+                                }));
+                            }
+                        } else {
+                            const records = Array.isArray(structuredContent.data)
+                                ? structuredContent.data
+                                : [];
+                            const cql = typeof args.cql === 'string' ? args.cql : '';
+
+                            totalCount = Number(structuredContent.count ?? records.length);
+
+                            if (tableRequest && records.length > 1 &&
+                                /\bfrom\s+(?:SupplierMCPService\.)?PurchaseOrders\b/i.test(cql)) {
+                                presentation = 'purchaseOrderTable';
+                                purchaseOrders = records.map(record => ({
+                                    purchaseOrder: record.purchaseOrder ?? null,
+                                    purchaseOrderDate: record.purchaseOrderDate ?? null,
+                                    companyCode: record.companyCode ?? null,
+                                    documentCurrency: record.documentCurrency ?? null
+                                }));
+                            } else if (tableRequest && records.length > 1 &&
+                                /\bfrom\s+(?:SupplierMCPService\.)?Invoices\b/i.test(cql)) {
+                                presentation = 'invoiceTable';
+                                invoices = records.map(record => ({
+                                    reqNumber: record.reqNumber ?? null,
+                                    documentNumber: record.documentNumber ?? null,
+                                    documentDate: record.documentDate ?? null,
+                                    dueDate: record.dueDate ?? null,
+                                    grossAmount: record.grossAmount ?? null,
+                                    currency: record.currency ?? null,
+                                    status: record.status ?? null
+                                }));
+                            }
+                        }
+                    }
 
                     const sanitizedResult = JSON.stringify(
                         result.isError
@@ -315,7 +400,31 @@ module.exports = async function () {
                 return req.reject(502, 'The supplier assistant could not generate a response');
             }
 
-            return answer;
+            let responseText = answer;
+
+            if (presentation === 'invoiceTable') {
+                responseText = `You have ${totalCount} invoices:`;
+            } else if (presentation === 'purchaseOrderTable') {
+                if (openPurchaseOrderTable && totalCount > purchaseOrders.length) {
+                    const shownCount = purchaseOrders.length === 5
+                        ? 'five'
+                        : purchaseOrders.length;
+
+                    responseText = `You have ${totalCount} open purchase orders. Here are the first ${shownCount}:`;
+                } else if (openPurchaseOrderTable) {
+                    responseText = `You have ${totalCount} open purchase orders:`;
+                } else {
+                    responseText = `You have ${totalCount} purchase orders:`;
+                }
+            }
+
+            return {
+                text: responseText,
+                presentation,
+                totalCount,
+                purchaseOrders,
+                invoices
+            };
         } finally {
             const mcpCloseStartedAt = performance.now();
             await client.close().catch(() => {});
