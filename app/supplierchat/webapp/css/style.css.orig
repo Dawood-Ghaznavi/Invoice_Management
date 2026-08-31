@@ -101,11 +101,6 @@
     font-size: 1.35rem;
 }
 
-.supplierChatSubtitle {
-    margin-top: 0.25rem;
-    color: #6a6d70;
-}
-
 .supplierMessageScroller {
     min-height: 0;
 }
@@ -210,10 +205,38 @@
 }
 
 .supplierAssistantMessage {
-    max-width: 78%;
+    width: 100%;
+    min-width: 0;
     padding-top: 0.35rem;
     color: #1d2d3e;
     line-height: 1.55;
+}
+
+.supplierAssistantText {
+    display: block;
+    max-width: 78%;
+}
+
+.supplierResultTable {
+    margin-top: 0.75rem;
+    overflow: hidden;
+    border: 1px solid #e2e7ec;
+    border-radius: 0.6rem;
+    background: #ffffff;
+}
+
+.supplierResultTable .sapMListTblHeaderCell {
+    background: #f7f9fb;
+}
+
+.supplierResultTable .sapMListTblCell {
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+}
+
+.supplierResultTable .sapMObjStatus,
+.supplierResultTable .sapMObjectNumber {
+    white-space: nowrap;
 }
 
 .supplierInputDock {
@@ -306,7 +329,7 @@
     }
 
     .supplierUserMessage,
-    .supplierAssistantMessage {
+    .supplierAssistantText {
         max-width: 88%;
     }
 }
@@ -314,10 +337,6 @@
 @media (max-width: 600px) {
     .supplierChatTitle {
         font-size: 1.15rem;
-    }
-
-    .supplierChatSubtitle {
-        font-size: 0.85rem;
     }
 
     .supplierSendButton .sapMBtnContent {

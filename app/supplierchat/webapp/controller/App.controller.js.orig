@@ -14,8 +14,7 @@ sap.ui.define([
 
             this.getView().setModel(new JSONModel({
                 profile: {
-                    fullName: "",
-                    greeting: ""
+                    fullName: ""
                 },
                 conversations: [conversation],
                 activeConversation: conversation,
@@ -188,19 +187,18 @@ sap.ui.define([
 
         _loadProfile: async function () {
             const profileFunction = this.getView().getModel().bindContext("/getProfile(...)");
-            const chatModel = this.getView().getModel("chat");
-            const resourceBundle = this.getOwnerComponent().getModel("i18n").getResourceBundle();
 
             try {
                 await profileFunction.execute("$direct");
-                const fullName = profileFunction.getBoundContext().getProperty("fullName") || "";
-                const firstSpaceIndex = fullName.indexOf(" ");
-                const firstName = firstSpaceIndex === -1 ? fullName : fullName.slice(0, firstSpaceIndex);
-                chatModel.setProperty("/profile/fullName", fullName);
-                chatModel.setProperty("/profile/greeting", resourceBundle.getText("emptyStateGreeting", [firstName || "there"]));
+                this.getView().getModel("chat").setProperty(
+                    "/profile/fullName",
+                    profileFunction.getBoundContext().getProperty("fullName")
+                );
             } catch (error) {
-                chatModel.setProperty("/profile/fullName", resourceBundle.getText("defaultContactName"));
-                chatModel.setProperty("/profile/greeting", resourceBundle.getText("emptyStateGreeting", ["there"]));
+                this.getView().getModel("chat").setProperty(
+                    "/profile/fullName",
+                    this.getOwnerComponent().getModel("i18n").getResourceBundle().getText("defaultContactName")
+                );
             } finally {
                 profileFunction.destroy();
             }

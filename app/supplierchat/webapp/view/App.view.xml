@@ -105,6 +105,10 @@
                                     alignItems="Center"
                                     renderType="Bare"
                                     visible="{= !${chat>/hasMessages} }">
+                                    <Text
+                                        class="supplierEmptyGreeting"
+                                        text="{chat>/profile/greeting}"
+                                        visible="{= !!${chat>/profile/greeting} }" />
                                     <Title
                                         class="supplierEmptyTitle"
                                         level="H2"

@@ -120,6 +120,13 @@
     transform: translateY(9.5rem);
 }
 
+.supplierEmptyGreeting {
+    color: #5b7083;
+    font-size: 1rem;
+    line-height: 1.4rem;
+    margin-bottom: 0.35rem;
+}
+
 .supplierEmptyTitle {
     color: #1d2d3e;
     font-size: 1.875rem;
