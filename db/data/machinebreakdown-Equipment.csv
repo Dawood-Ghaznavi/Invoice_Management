@@ -1,0 +1,4 @@
+equipmentID,name,model_modelID,controllerModel,configuration,location,isActive,isDemoData
+MCV200-DEMO-001,Conveyor 3,MCV-200,MC-20,DEMO-A,Packaging Hall - Line A,true,true
+MCV200-DEMO-002,Carton Transfer Conveyor 1,MCV-200,MC-20,DEMO-A,Packaging Hall - Line B,true,true
+MCV200-DEMO-003,Dispatch Conveyor 2,MCV-200,MC-20,DEMO-A,Dispatch Area,true,true

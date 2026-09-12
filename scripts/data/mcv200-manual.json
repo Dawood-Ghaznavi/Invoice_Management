@@ -1,0 +1,107 @@
+{
+  "embeddingModel": "text-embedding-3-small",
+  "embeddingDimensions": 1536,
+  "manual": {
+    "ID": "10000000-0000-4000-8000-000000000001",
+    "documentNumber": "NX-MCV200-OM-001",
+    "title": "MCV-200 Operation & Fault Reference",
+    "manualType": "Operation Manual",
+    "version": "1.0",
+    "model_modelID": "MCV-200",
+    "equipment_equipmentID": null,
+    "controllerModel": "MC-20",
+    "configuration": "DEMO-A",
+    "validFrom": "2026-09-12",
+    "validTo": null,
+    "isCurrent": true,
+    "fileName": "MCV200_Equipment_Manual_Demo.pdf",
+    "mimeType": "application/pdf",
+    "isDemoData": true
+  },
+  "chunks": [
+    {
+      "ID": "20000000-0000-4000-8000-000000000001",
+      "pageNumber": 1,
+      "chunkNumber": 1,
+      "faultCode": null,
+      "content": "Applicability and equipment overview. Manual NX-MCV200-OM-001 version 1.0 applies to the fictional MCV-200 modular conveyor with MC-20 controller, configuration DEMO-A. The assembly includes a conveyor belt, drive motor, guarded drive transmission, entry sensor, operator display and safety interlock circuit. Equipment names such as Conveyor 3 identify individual installations and are not model names. Confirm the model and controller configuration before applying a fault entry; this manual does not cover other conveyor models or controller variants."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000002",
+      "pageNumber": 2,
+      "chunkNumber": 2,
+      "faultCode": null,
+      "content": "Prerequisites before troubleshooting. Confirm the equipment ID, model MCV-200 and controller configuration DEMO-A. Read the complete displayed fault code and record whether the machine is stopped or operating intermittently. Follow the applicable site emergency and hazardous-energy-control procedures. Physical inspection, guard removal, electrical access, blockage removal and repair require appropriately authorized personnel and the prescribed safe condition. A stopped conveyor is not evidence of energy isolation."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000003",
+      "pageNumber": 2,
+      "chunkNumber": 3,
+      "faultCode": null,
+      "content": "Observation and maintenance boundaries. An operator may report the display code, time of occurrence, whether movement stopped and conditions noticed before the stop from the normal operator position. Do not reach into the conveyor, touch a motor to assess temperature, remove guards or open an electrical enclosure. Checks of the thermal-protection circuit, drive mechanism, sensor alignment or safety interlocks belong to authorized maintenance personnel. Never bypass an interlock or repeatedly reset a fault. Record actions only when someone confirms they were performed; recommended checks must not be recorded as completed work."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000004",
+      "pageNumber": 3,
+      "chunkNumber": 4,
+      "faultCode": null,
+      "content": "Fault-code reference for MCV-200 with MC-20 controller and DEMO-A configuration. E-402 means the controller reports an active motor thermal-protection input; it does not establish that the motor is damaged. E-215 means the entry sensor signal is inconsistent with the expected carton-entry sequence. E-310 means the controller reports an open guard-interlock circuit and inhibits movement. Each code identifies a reported condition, not a verified root cause, and all entries require the prerequisites on page 2."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000005",
+      "pageNumber": 3,
+      "chunkNumber": 5,
+      "faultCode": null,
+      "content": "Fault identification limitations. Copy the exact code and accompanying display text, including the sequence of multiple codes when known. Do not choose a code because its description merely resembles a symptom. If a code is not listed, the manual provides no code-specific explanation; record it exactly, capture observed symptoms and refer the issue to maintenance. If no code is displayed, report that fact instead of assigning one. A matching code supports retrieval of guidance but does not prove that a possible cause is present."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000006",
+      "pageNumber": 4,
+      "chunkNumber": 6,
+      "faultCode": "E-402",
+      "content": "E-402 documented meaning and possible causes. The controller is receiving an active motor thermal-protection input and inhibits the conveyor drive while that input is active. The indication can be consistent with motor heating, but does not confirm actual motor temperature, permanent damage or the underlying cause. Possible causes requiring investigation include restricted motor cooling, elevated mechanical load, or a fault in the thermal-protection device or signal path. These are possible causes, not confirmed findings."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000007",
+      "pageNumber": 4,
+      "chunkNumber": 7,
+      "faultCode": "E-402",
+      "content": "E-402 observations, investigation and escalation. Record when E-402 first appeared, whether the conveyor stopped, whether it recurred, and any noticed change in loading or operating conditions. Record unusual noise or smell only if observed. Do not touch the motor, access guarded areas or restart the conveyor to reproduce the event. After page 2 prerequisites are satisfied, authorized maintenance should assess cooling, mechanical loading and the thermal-protection signal using approved procedures. An unresolved or recurring E-402 requires maintenance review. A report may state: E-402 displayed; conveyor reported stopped; cause not yet confirmed."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000008",
+      "pageNumber": 5,
+      "chunkNumber": 8,
+      "faultCode": "E-215",
+      "content": "E-215 entry sensor signal inconsistent. The controller cannot reconcile the entry sensor signal with the expected carton-entry sequence; this does not establish that the sensor failed. Possible causes include an obstruction in the sensing area, misalignment, contamination, or a signal-path issue, all requiring maintenance confirmation. Record when the code appeared, whether cartons accumulated and any recent change in carton presentation. Do not reach into the entry area or reposition the sensor. Authorized personnel should investigate the sensing area, alignment and signal under the approved procedure."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000009",
+      "pageNumber": 5,
+      "chunkNumber": 9,
+      "faultCode": "E-310",
+      "content": "E-310 guard interlock open. The controller reports an open guard-interlock circuit and inhibits movement. This may represent an open guard or an interlock component or signal-path issue; it does not prove that a switch is defective. Record the code, time, and any guard state visible without approaching a hazard. Do not manipulate guards or operate the machine to test the report. Authorized personnel must investigate under the site-approved safety procedure. Never bridge, bypass or defeat the interlock, and return to service requires the applicable authorization."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000010",
+      "pageNumber": 6,
+      "chunkNumber": 10,
+      "faultCode": null,
+      "content": "Minimum breakdown-report information. Record the internal equipment ID, name, model and location without substituting the model for the equipment ID. Record the displayed fault code and the reporting person's symptoms, distinguishing a stopped machine from intermittent operation. Include when the issue was first noticed, recurrence when known, relevant operating changes, and only checks confirmed by the reporting person. Cite manual NX-MCV200-OM-001 version 1.0, the relevant fault page, and prerequisites on page 2. Identify unknown cause and unanswered questions."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000011",
+      "pageNumber": 6,
+      "chunkNumber": 11,
+      "faultCode": null,
+      "content": "Separate evidence from guidance. Preserve the original report text. A prepared description may organize and clarify observations but must not add an unobserved temperature, failed component, repair, elapsed downtime or completed inspection. Keep possible causes and recommended checks in a separate reference-guidance area. State uncertainty explicitly when a finding has not been established."
+    },
+    {
+      "ID": "20000000-0000-4000-8000-000000000012",
+      "pageNumber": 6,
+      "chunkNumber": 12,
+      "faultCode": null,
+      "content": "Handover, return to service and document control. Route the report through the site's maintenance process. Return to service requires the applicable authorization; preparing or acknowledging a report does not provide that authorization. Version 1.0 was issued on 12 September 2026. Keep the referenced PDF unchanged and issue a new document version for revised content. The manual contains no spare-parts catalogue, electrical schematics, repair instructions or numeric reset criteria, so missing specifications must not be inferred."
+    }
+  ]
+}
