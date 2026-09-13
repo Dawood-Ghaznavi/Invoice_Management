@@ -1,0 +1,131 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <VBox class="reportedIssueSection">
+        <VBox class="reportedIssuePanel">
+            <Label text="{i18n>equipmentSearchLabel}" labelFor="equipmentSearch" required="true" />
+            <Input
+                id="equipmentSearch"
+                value="{reportedIssue>/searchText}"
+                editable="{ui>/isEditable}"
+                placeholder="{i18n>equipmentSearchPlaceholder}"
+                showSuggestion="true"
+                startSuggestion="1"
+                filterSuggests="false"
+                suggest=".extension.machineassistant.ext.controller.ReportedIssue.onEquipmentSuggest"
+                suggestionItemSelected=".extension.machineassistant.ext.controller.ReportedIssue.onEquipmentSelected"
+                liveChange=".extension.machineassistant.ext.controller.ReportedIssue.onEquipmentLiveChange"
+                valueState="{reportedIssue>/equipmentValueState}"
+                valueStateText="{i18n>equipmentRequiredMessage}"
+                class="equipmentSearch"
+                suggestionRows="{path: '/Equipment', parameters: {$select: 'equipmentID,name,location,model_modelID,isActive', $expand: 'model($select=modelID,name)'}}">
+                <suggestionColumns>
+                    <Column><Label text="{i18n>equipmentNameColumn}" /></Column>
+                    <Column><Label text="{i18n>equipmentIdColumn}" /></Column>
+                    <Column><Label text="{i18n>equipmentLocationColumn}" /></Column>
+                </suggestionColumns>
+                <suggestionRows>
+                    <ColumnListItem>
+                        <cells>
+                            <Text text="{name}" />
+                            <Text text="{equipmentID}" />
+                            <Text text="{location}" />
+                        </cells>
+                    </ColumnListItem>
+                </suggestionRows>
+            </Input>
+
+            <Text
+                text="{= ${reportedIssue>/equipment/equipmentID} + '  ·  ' + ${reportedIssue>/equipment/modelName} + '  ·  ' + ${reportedIssue>/equipment/location} }"
+                visible="{= !!%{reportedIssue>/equipment/equipmentID} }"
+                wrapping="true"
+                class="equipmentMetaLine" />
+
+            <VBox class="observationsArea">
+                <Label text="{i18n>observedSymptomsLabel}" labelFor="observedSymptomsInput" required="true" design="Bold" />
+                <TextArea
+                    id="observedSymptomsInput"
+                    value="{observedSymptoms}"
+                    editable="{ui>/isEditable}"
+                    width="100%"
+                    rows="3"
+                    growing="true"
+                    growingMaxLines="8"
+                    placeholder="{i18n>observedSymptomsPlaceholder}"
+                    valueState="{reportedIssue>/symptomsValueState}"
+                    valueStateText="{i18n>symptomsRequiredMessage}" />
+            </VBox>
+            <HBox alignItems="Start" wrap="Wrap" class="issueDetailsRow">
+                <VBox class="issueDetailField">
+                    <layoutData>
+                        <FlexItemData growFactor="1" baseSize="18rem" />
+                    </layoutData>
+                    <Label text="{i18n>faultCodeLabel}" labelFor="faultCodeInput" />
+                    <Input
+                        id="faultCodeInput"
+                        value="{faultCode}"
+                        editable="{ui>/isEditable}"
+                        placeholder="{i18n>faultCodePlaceholder}" />
+                </VBox>
+                <VBox class="issueDetailField">
+                    <layoutData>
+                        <FlexItemData growFactor="1" baseSize="18rem" />
+                    </layoutData>
+                    <Label text="{i18n>machineStoppedLabel}" required="true" />
+                    <SegmentedButton
+                        selectedKey="{= %{machineStopped} === true ? 'yes' : %{machineStopped} === false ? 'no' : 'unknown' }"
+                        enabled="{ui>/isEditable}"
+                        selectionChange=".extension.machineassistant.ext.controller.ReportedIssue.onMachineStoppedChange">
+                        <items>
+                            <SegmentedButtonItem key="yes" text="{i18n>yes}" />
+                            <SegmentedButtonItem key="no" text="{i18n>no}" />
+                            <SegmentedButtonItem key="unknown" text="{i18n>unknown}" />
+                        </items>
+                    </SegmentedButton>
+                </VBox>
+            </HBox>
+
+
+            <VBox class="checksArea">
+                <Button
+                    text="{= %{reportedIssue>/checksExpanded} ? ${i18n>hideChecksButton} : ${i18n>addChecksButton} }"
+                    icon="{= %{reportedIssue>/checksExpanded} ? 'sap-icon://slim-arrow-down' : 'sap-icon://slim-arrow-right' }"
+                    type="Transparent"
+                    press=".extension.machineassistant.ext.controller.ReportedIssue.onToggleChecks"
+                    class="checksToggle" />
+                <VBox visible="{reportedIssue>/checksExpanded}" class="checksContent">
+                    <Label text="{i18n>checksLabel}" labelFor="checksInput" />
+                    <TextArea
+                        id="checksInput"
+                        value="{checksAlreadyPerformed}"
+                        editable="{ui>/isEditable}"
+                        width="100%"
+                        rows="2"
+                        growing="true"
+                        growingMaxLines="4"
+                        placeholder="{i18n>checksPlaceholder}" />
+                </VBox>
+            </VBox>
+
+            <MessageStrip
+                text="{reportedIssue>/error}"
+                type="Error"
+                showIcon="true"
+                showCloseButton="true"
+                close=".extension.machineassistant.ext.controller.ReportedIssue.onDismissError"
+                visible="{= !!%{reportedIssue>/error} }"
+                class="sapUiSmallMarginTop" />
+
+            <HBox justifyContent="End" class="guidanceActionRow">
+                <Button
+                    text="{i18n>findGuidanceButton}"
+                    icon="sap-icon://search"
+                    type="Emphasized"
+                    visible="{ui>/isEditable}"
+                    enabled="{= !%{reportedIssue>/busy} }"
+                    busy="{reportedIssue>/busy}"
+                    press=".extension.machineassistant.ext.controller.ReportedIssue.onFindGuidance" />
+            </HBox>
+        </VBox>
+    </VBox>
+</core:FragmentDefinition>

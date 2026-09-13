@@ -12,4 +12,18 @@ module.exports = function () {
 
         req.data.reportNumber = `BR-${String(number.nextNumber).padStart(6, '0')}`;
     });
+
+    this.before('PATCH', Reports.drafts, req => {
+        const inputChanged = Object.keys(req.data).some(field => [
+            'equipment_equipmentID',
+            'observedSymptoms',
+            'faultCode',
+            'checksAlreadyPerformed',
+            'machineStopped'
+        ].includes(field));
+
+        if (inputChanged) {
+            req.data.guidanceIsCurrent = false;
+        }
+    });
 };

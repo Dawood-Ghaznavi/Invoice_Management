@@ -1,0 +1,8 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <ObjectStatus
+        text="{businessStatus}"
+        state="{= %{businessStatus} === 'Prepared' ? 'Success' : %{businessStatus} === 'In Progress' ? 'Information' : 'None' }"
+        icon="{= %{businessStatus} === 'Prepared' ? 'sap-icon://accept' : %{businessStatus} === 'In Progress' ? 'sap-icon://information' : '' }" />
+</core:FragmentDefinition>
