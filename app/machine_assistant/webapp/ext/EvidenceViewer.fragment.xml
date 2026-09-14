@@ -1,0 +1,94 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog
+        id="evidenceViewerDialog"
+        title="{evidence>/title}"
+        contentWidth="80rem"
+        contentHeight="46rem"
+        stretchOnPhone="true"
+        resizable="true"
+        draggable="true"
+        verticalScrolling="false"
+        horizontalScrolling="false"
+        busy="{evidence>/busy}"
+        busyIndicatorDelay="0"
+        class="evidenceViewerDialog"
+        afterClose=".onEvidenceViewerAfterClose">
+        <subHeader>
+            <OverflowToolbar class="evidenceViewerToolbar">
+                <Button
+                    icon="sap-icon://navigation-left-arrow"
+                    type="Transparent"
+                    tooltip="{i18n>evidencePreviousPage}"
+                    enabled="{evidence>/canPrevious}"
+                    press=".onEvidencePreviousPage" />
+                <Text text="{evidence>/pageText}" class="evidencePageIndicator" />
+                <Button
+                    icon="sap-icon://navigation-right-arrow"
+                    type="Transparent"
+                    tooltip="{i18n>evidenceNextPage}"
+                    enabled="{evidence>/canNext}"
+                    press=".onEvidenceNextPage" />
+                <ToolbarSpacer />
+                <Button
+                    icon="sap-icon://zoom-out"
+                    type="Transparent"
+                    tooltip="{i18n>evidenceZoomOut}"
+                    enabled="{evidence>/canZoomOut}"
+                    press=".onEvidenceZoomOut" />
+                <Text text="{evidence>/zoomText}" class="evidenceZoomIndicator" />
+                <Button
+                    icon="sap-icon://zoom-in"
+                    type="Transparent"
+                    tooltip="{i18n>evidenceZoomIn}"
+                    enabled="{evidence>/canZoomIn}"
+                    press=".onEvidenceZoomIn" />
+            </OverflowToolbar>
+        </subHeader>
+        <VBox fitContainer="true" class="evidenceViewerBody">
+            <MessageStrip
+                text="{evidence>/error}"
+                type="Error"
+                showIcon="true"
+                showCloseButton="false"
+                visible="{= !!%{evidence>/error} }"
+                class="evidenceViewerError" />
+            <VBox
+                visible="{evidence>/showExcerptFallback}"
+                class="evidenceExcerptFallback">
+                <ObjectStatus
+                    text="{i18n>evidenceExcerptTitle}"
+                    state="Information"
+                    icon="sap-icon://document-text" />
+                <Text
+                    text="{i18n>evidenceExcerptFallbackHint}"
+                    wrapping="true"
+                    class="evidenceExcerptHint" />
+                <Text
+                    text="{evidence>/excerpt}"
+                    wrapping="true"
+                    class="evidenceExcerptText" />
+            </VBox>
+            <ScrollContainer
+                id="evidenceScroll"
+                width="100%"
+                height="100%"
+                vertical="true"
+                horizontal="true"
+                class="evidenceScroll">
+                <layoutData>
+                    <FlexItemData growFactor="1" baseSize="0%" />
+                </layoutData>
+                <core:HTML
+                    id="evidencePdfHost"
+                    content="&lt;div class=&quot;evidencePageHost&quot;&gt;&lt;/div&gt;" />
+            </ScrollContainer>
+        </VBox>
+        <endButton>
+            <Button
+                text="{i18n>evidenceClose}"
+                press=".onCloseEvidenceViewer" />
+        </endButton>
+    </Dialog>
+</core:FragmentDefinition>

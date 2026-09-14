@@ -40,7 +40,7 @@ annotate service.Reports with @(
         TypeName      : 'Breakdown Report',
         TypeNamePlural: 'Breakdown Reports',
         Title         : {Value: reportNumber},
-        TypeImageUrl  : 'sap-icon://wrench'
+        Description   : {Value: businessStatus}
     },
     UI.HeaderFacets: [
         {

@@ -2,6 +2,9 @@ node_modules/
 target/
 _out/
 gen/
+app/machine_assistant/dist/
+app/machine_assistant/.ui5-tooling-modules/
+/.ui5-tooling-modules/
 
 .cdsrc-private.json
 default-*.json

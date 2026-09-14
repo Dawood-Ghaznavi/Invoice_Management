@@ -217,7 +217,8 @@ module.exports = async function () {
             'pageNumber',
             'chunkNumber',
             'faultCode',
-            'content'
+            'content',
+            'sourceExcerpt'
         ];
         const semanticChunks = await db.run(
             SELECT.from(ManualChunks)
@@ -271,7 +272,8 @@ module.exports = async function () {
                 pageNumber: chunk.pageNumber,
                 faultCode: chunk.faultCode,
                 relevanceScore: Number(chunk.relevanceScore || 0),
-                content: chunk.content
+                content: chunk.content,
+                sourceExcerpt: chunk.sourceExcerpt || chunk.content
             };
         });
         const allowedChunkIDs = retrievedChunks.map(chunk => chunk.ID);
@@ -300,18 +302,23 @@ module.exports = async function () {
                     'Only say the machine is stopped when machineStopped is true.',
                     'When machineStopped is false, it may be described only as reported running.',
                     'When machineStopped is null, omit the operating state; never infer stopped from wording such as not working.',
+                    'A historical observation supplied by the user, such as that the machine had been running normally earlier, may remain in the factual report and does not redefine the current machineStopped value.',
                     'Include checks already performed only when the supplied value is non-empty, and identify them as user-reported checks.',
                     'Do not invent part numbers, fault meanings, measurements, procedures or references.',
                     'Preserve relevant safety prerequisites and warnings.',
-                    'Consolidate overlapping safety wording into one Warning item when one source supports the precautions; use a second Warning item only when a distinct precaution requires a different direct citation.',
+                    'Consolidate all relevant precautions supported by the same sourceChunkId into one Warning item; use another Warning item only when a distinct precaution requires a different direct citation.',
                     'Do not repeat the same restriction in multiple Warning items and do not add introductory safety filler.',
+                    'When faultCode is supplied, omit reminders whose purpose is to record or obtain the displayed fault code.',
+                    'When machineStopped is true or false, omit reminders whose purpose is to record or obtain the operating state.',
                     'Each guidance item must cite exactly one supplied sourceChunkId.',
                     'Write each non-warning guidance item as one concise sentence. Keep safety wording complete even when it needs more space.',
                     'Return no more than one Possible Cause item; summarize documented possibilities while keeping them explicitly unconfirmed.',
-                    'Return only the most relevant recommended checks. Do not force the guidance into an arbitrary number of steps.',
+                    'Return no more than two Recommended Check items and do not force the guidance into an arbitrary number of steps.',
+                    'Do not generate nonessential supporting content for an expandable or secondary guidance area; every returned item must warrant immediate display.',
                     'Omit equipment-name explanations and generic applicability text unless they materially help the technician.',
                     'Order guidance items as warnings, prerequisites, possible causes, recommended checks, then any essential general context.',
                     'The suggested short description must be a brief factual report title, not guidance or a diagnosis.',
+                    'When faultCode is supplied, include that exact code in the suggested short description.',
                     'The suggested detailed description must be one to three short sentences containing only reported facts: equipment name, explicitly supplied operating state, displayed fault code, observed symptoms, supplied completed checks, and that the cause is not confirmed.',
                     'Never put report numbers, equipment IDs, model, controller, configuration, location, manual interpretation, safety instructions, recommended checks, unanswered questions or inventories of missing details in the suggested report.',
                     'CAP has already validated document applicability for the selected equipment, model, controller, configuration and validity dates; never ask the user to reconfirm it.',
@@ -477,11 +484,15 @@ module.exports = async function () {
         const reportContainsMissingDetailInventory =
             /\b(?:not provided|not supplied|not reported|needs clarification|missing information|details? (?:is|are) unknown)\b/i
                 .test(suggestedDetailedDescription || '');
+        const stoppedStateWasInvented =
+            machineStopped !== true &&
+            /\bstopped\b/i.test(suggestedDetailedDescription || '');
+        const runningStateWasInvented =
+            machineStopped !== false &&
+            /\b(?:(?:is|remains)\s+(?:still\s+)?running|reported(?:\s+as)?\s+running)\b/i
+                .test(suggestedDetailedDescription || '');
         const operatingStateWasInvented =
-            (machineStopped !== true &&
-                /\bstopped\b/i.test(suggestedDetailedDescription || '')) ||
-            (machineStopped !== false &&
-                /\brunning\b/i.test(suggestedDetailedDescription || ''));
+            stoppedStateWasInvented || runningStateWasInvented;
 
         if (!Array.isArray(generatedGuidance.guidanceItems) ||
             !generatedGuidance.guidanceItems.length ||
@@ -502,6 +513,23 @@ module.exports = async function () {
             reportContainsEquipmentMetadata ||
             reportContainsMissingDetailInventory ||
             operatingStateWasInvented) {
+            log.warn('Guidance content validation failed', {
+                responseId: response.id,
+                guidanceItemCount: Array.isArray(generatedGuidance.guidanceItems)
+                    ? generatedGuidance.guidanceItems.length
+                    : null,
+                reportedSummaryPresent: Boolean(reportedSymptomSummary),
+                reportedSummaryFormatValid:
+                    /\breported[.!?]?$/i.test(reportedSymptomSummary || ''),
+                concernSummaryContainsIdentifier,
+                materialLimitationReason: materialLimitation?.reason,
+                hasSuggestedShortDescription: Boolean(suggestedShortDescription),
+                hasSuggestedDetailedDescription: Boolean(suggestedDetailedDescription),
+                reportContainsEquipmentMetadata,
+                reportContainsMissingDetailInventory,
+                stoppedStateWasInvented,
+                runningStateWasInvented
+            });
             return req.error({status: 502, message: 'Guidance generation returned unsupported content'});
         }
 
@@ -568,7 +596,7 @@ module.exports = async function () {
                 manualDocument_ID: chunk.document_ID,
                 manualChunk_ID: chunk.ID,
                 pageNumber: chunk.pageNumber,
-                excerpt: chunk.content,
+                excerpt: chunk.sourceExcerpt || chunk.content,
                 relevanceScore: Number(Number(chunk.relevanceScore || 0).toFixed(5)),
                 ...technicalDraftFields
             };

@@ -8,13 +8,16 @@
     "sapui5"
   ],
   "main": "webapp/index.html",
-  "dependencies": {},
+  "dependencies": {
+    "pdfjs-dist": "^6.3.289"
+  },
   "devDependencies": {
-    "@ui5/cli": "^4.0.33",
-    "@sap/ux-ui5-tooling": "1",
     "@sap-ux/eslint-plugin-fiori-tools": "^10.0.0",
+    "@sap/ux-ui5-tooling": "1",
+    "@ui5/cli": "^4.0.33",
     "eslint": "^10",
-    "ui5-task-zipper": "^3.4.x"
+    "ui5-task-zipper": "^3.4.x",
+    "ui5-tooling-modules": "^3.38.3"
   },
   "scripts": {
     "deploy-config": "npx -p @sap/ux-ui5-tooling fiori add deploy-config cf",

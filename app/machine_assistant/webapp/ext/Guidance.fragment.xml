@@ -155,47 +155,6 @@
                     </CustomListItem>
                 </List>
 
-                <Panel
-                    headerText="{i18n>moreGuidanceTitle}"
-                    expandable="true"
-                    expanded="false"
-                    backgroundDesign="Transparent"
-                    visible="{reportedIssue>/hasGuidanceMore}"
-                    class="guidanceMorePanel">
-                    <List
-                        items="{reportedIssue>/guidanceMore}"
-                        showSeparators="Inner"
-                        class="guidanceStatementList">
-                        <CustomListItem>
-                            <VBox class="guidanceActionItem">
-                                <ObjectStatus
-                                    text="{reportedIssue>typeLabel}"
-                                    state="{reportedIssue>state}"
-                                    icon="{reportedIssue>icon}" />
-                                <HBox
-                                    alignItems="Start"
-                                    wrap="Wrap"
-                                    class="guidanceStatementRow">
-                                    <Text
-                                        text="{reportedIssue>text}"
-                                        wrapping="true"
-                                        class="guidanceStatementText">
-                                        <layoutData>
-                                            <FlexItemData growFactor="1" baseSize="13rem" />
-                                        </layoutData>
-                                    </Text>
-                                    <Link
-                                        text="{reportedIssue>citationLabel}"
-                                        tooltip="{reportedIssue>citationTooltip}"
-                                        visible="{= !!%{reportedIssue>sourceDocumentID} }"
-                                        press=".extension.machineassistant.ext.controller.ReportedIssue.onOpenGuidanceSource"
-                                        class="guidanceInlineCitation" />
-                                </HBox>
-                            </VBox>
-                        </CustomListItem>
-                    </List>
-                </Panel>
-
                 <VBox
                     visible="{= !!%{missingInformation} }"
                     class="guidanceLimitation">

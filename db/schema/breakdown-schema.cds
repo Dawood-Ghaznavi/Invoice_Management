@@ -70,7 +70,8 @@ entity ManualChunks : cuid {
     pageNumber  : Integer;
     chunkNumber : Integer;
     faultCode   : String(40);
-    content     : LargeString;
+    content       : LargeString;
+    sourceExcerpt : LargeString;
 
     @cds.api.ignore
     embedding : Vector(1536);

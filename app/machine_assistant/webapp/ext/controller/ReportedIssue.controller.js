@@ -1,14 +1,14 @@
 sap.ui.define([
     "sap/base/Log",
     "sap/ui/core/library",
+    "sap/ui/core/Fragment",
     "sap/ui/core/mvc/ControllerExtension",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "sap/ui/model/Sorter",
     "sap/ui/model/json/JSONModel",
-    "sap/m/MessageToast",
-    "sap/m/PDFViewer"
-], function (Log, coreLibrary, ControllerExtension, Filter, FilterOperator, Sorter, JSONModel, MessageToast, PDFViewer) {
+    "sap/m/MessageToast"
+], function (Log, coreLibrary, Fragment, ControllerExtension, Filter, FilterOperator, Sorter, JSONModel, MessageToast) {
     "use strict";
 
     const {ValueState} = coreLibrary;
@@ -25,11 +25,26 @@ sap.ui.define([
                     error: "",
                     guidanceWarnings: [],
                     guidancePrimary: [],
-                    guidanceMore: [],
                     hasGuidanceWarnings: false,
-                    hasGuidancePrimary: false,
-                    hasGuidanceMore: false
+                    hasGuidancePrimary: false
                 }), "reportedIssue");
+                this.base.getView().setModel(new JSONModel({
+                    title: "",
+                    excerpt: "",
+                    busy: false,
+                    error: "",
+                    currentPage: 1,
+                    citedPage: 1,
+                    totalPages: 0,
+                    pageText: "",
+                    zoom: 1,
+                    zoomText: "100%",
+                    canPrevious: false,
+                    canNext: false,
+                    canZoomOut: false,
+                    canZoomIn: true,
+                    showExcerptFallback: false
+                }), "evidence");
             },
             routing: {
                 onAfterBinding: async function (oBindingContext) {
@@ -40,10 +55,8 @@ sap.ui.define([
                     oIssueModel.setProperty("/error", "");
                     oIssueModel.setProperty("/guidanceWarnings", []);
                     oIssueModel.setProperty("/guidancePrimary", []);
-                    oIssueModel.setProperty("/guidanceMore", []);
                     oIssueModel.setProperty("/hasGuidanceWarnings", false);
                     oIssueModel.setProperty("/hasGuidancePrimary", false);
-                    oIssueModel.setProperty("/hasGuidanceMore", false);
 
                     try {
                         const sEquipmentID = await oBindingContext.requestProperty("equipment_equipmentID");
@@ -105,9 +118,11 @@ sap.ui.define([
                     $expand: "manualDocument($select=ID,documentNumber,title,version,fileName)"
                 }
             );
-            const [aItemContexts, aSourceContexts] = await Promise.all([
+            const [aItemContexts, aSourceContexts, sFaultCode, vMachineStopped] = await Promise.all([
                 oItemsBinding.requestContexts(0, 100),
-                oSourcesBinding.requestContexts(0, 100)
+                oSourcesBinding.requestContexts(0, 100),
+                oReportContext.requestProperty("faultCode"),
+                oReportContext.requestProperty("machineStopped")
             ]);
             const mSourcesByID = new Map(aSourceContexts.map(oContext => {
                 const oSource = oContext.getObject();
@@ -121,12 +136,12 @@ sap.ui.define([
                 },
                 "Possible Cause": {
                     label: oBundle.getText("guidanceTypePossibleCause"),
-                    state: "Information",
+                    state: "None",
                     icon: "sap-icon://inspection"
                 },
                 "Recommended Check": {
                     label: oBundle.getText("guidanceTypeRecommendedCheck"),
-                    state: "Information",
+                    state: "None",
                     icon: "sap-icon://activity-items"
                 },
                 General: {
@@ -152,6 +167,10 @@ sap.ui.define([
                     text: oItem.text,
                     sourceDocumentID: oSource.manualDocument_ID,
                     pageNumber: iPageNumber,
+                    excerpt: oSource.excerpt,
+                    documentTitle:
+                        oDocument.title || oDocument.fileName || oBundle.getText("equipmentManual"),
+                    documentVersion: oDocument.version || "",
                     citationLabel: oBundle.getText(
                         "manualCitation",
                         [iPageNumber || oBundle.getText("unknownPage")]
@@ -164,8 +183,17 @@ sap.ui.define([
                     ].filter(Boolean).join(" · ")
                 };
             });
+            const bFaultCodeAndOperatingStateProvided =
+                Boolean(sFaultCode?.trim()) &&
+                (vMachineStopped === true || vMachineStopped === false);
             const aWarnings = aItems.filter(oItem =>
                 ["Warning", "Prerequisite"].includes(oItem.type)
+            ).filter(oItem =>
+                !bFaultCodeAndOperatingStateProvided || !(
+                    /\brecord\b/i.test(oItem.text) &&
+                    /\b(?:displayed\s+)?(?:fault\s+)?code\b/i.test(oItem.text) &&
+                    /\b(?:operating state|machine state|stopped|running)\b/i.test(oItem.text)
+                )
             );
             const aPossibleCauses = aItems.filter(oItem =>
                 oItem.type === "Possible Cause"
@@ -184,18 +212,10 @@ sap.ui.define([
                 ).slice(0, 2));
             }
 
-            const oPrimaryItems = new Set(aPrimary);
-            const aMore = aItems.filter(oItem =>
-                !["Warning", "Prerequisite"].includes(oItem.type) &&
-                !oPrimaryItems.has(oItem)
-            );
-
             oIssueModel.setProperty("/guidanceWarnings", aWarnings);
             oIssueModel.setProperty("/guidancePrimary", aPrimary);
-            oIssueModel.setProperty("/guidanceMore", aMore);
             oIssueModel.setProperty("/hasGuidanceWarnings", aWarnings.length > 0);
             oIssueModel.setProperty("/hasGuidancePrimary", aPrimary.length > 0);
-            oIssueModel.setProperty("/hasGuidanceMore", aMore.length > 0);
         },
 
         onEquipmentSuggest: function (oEvent) {
@@ -353,40 +373,396 @@ sap.ui.define([
             }
         },
 
-        onOpenGuidanceSource: function (oEvent) {
+        _loadPdfJs: function () {
+            if (!this._pPdfJs) {
+                this._pPdfJs = new Promise((resolve, reject) => {
+                    sap.ui.require([
+                        "machineassistant/ext/util/PdfJs"
+                    ], resolve, reject);
+                }).then(oPdfJs => {
+                    oPdfJs.GlobalWorkerOptions.workerSrc =
+                        sap.ui.require.toUrl("pdfjs-dist/build/pdf.worker.min.mjs");
+                    this._oPdfJs = oPdfJs;
+                    return oPdfJs;
+                });
+            }
+
+            return this._pPdfJs;
+        },
+
+        onOpenGuidanceSource: async function (oEvent) {
+            const oView = this.base.getView();
+            const oBundle = oView.getModel("i18n").getResourceBundle();
+            const oEvidenceModel = oView.getModel("evidence");
             const oSource = oEvent.getSource()
                 .getBindingContext("reportedIssue")
                 ?.getObject();
-            const sDocumentID = oSource?.sourceDocumentID ||
-                oSource?.manualDocumentID;
-            const iPageNumber = oSource?.pageNumber;
+            const sDocumentID = oSource?.sourceDocumentID;
+            const iPageNumber = Number(oSource?.pageNumber) || 1;
 
             if (!sDocumentID) {
-                MessageToast.show(
-                    this.base.getView().getModel("i18n").getResourceBundle().getText("guidanceSourceUnavailable")
-                );
+                MessageToast.show(oBundle.getText("guidanceSourceUnavailable"));
                 return;
             }
 
-            const sServiceUrl = this.base.getView().getModel().getServiceUrl();
-            const sDocumentUrl = sServiceUrl + "ManualDocuments(ID=" +
-                encodeURIComponent(sDocumentID) + ")/content/$value" +
-                (iPageNumber ? "#page=" + iPageNumber : "");
+            const sDocumentUrl = oView.getModel().getServiceUrl() +
+                "ManualDocuments(ID=" + encodeURIComponent(sDocumentID) +
+                ")/content/$value";
+            const iRequestID = (this._iEvidenceRequestID || 0) + 1;
 
-            if (!this._oGuidancePdfViewer) {
-                this._oGuidancePdfViewer = new PDFViewer({
-                    showDownloadButton: true,
-                    isTrustedSource: true
+            this._iEvidenceRequestID = iRequestID;
+            this._oEvidenceAbortController?.abort();
+            this._oEvidenceAbortController = new AbortController();
+
+            oEvidenceModel.setData({
+                title: [
+                    oSource.documentTitle || oBundle.getText("equipmentManual"),
+                    oSource.documentVersion
+                        ? oBundle.getText("manualVersion", [oSource.documentVersion])
+                        : ""
+                ].filter(Boolean).join(" · "),
+                excerpt: oSource.excerpt || "",
+                busy: true,
+                error: "",
+                currentPage: iPageNumber,
+                citedPage: iPageNumber,
+                totalPages: 0,
+                pageText: "",
+                zoom: 1,
+                zoomText: oBundle.getText("evidenceZoomIndicator", [100]),
+                canPrevious: false,
+                canNext: false,
+                canZoomOut: false,
+                canZoomIn: true,
+                showExcerptFallback: false
+            });
+
+            if (!this._pEvidenceDialog) {
+                this._pEvidenceDialog = Fragment.load({
+                    id: oView.getId(),
+                    name: "machineassistant.ext.EvidenceViewer",
+                    controller: this
+                }).then(oDialog => {
+                    oView.addDependent(oDialog);
+                    return oDialog;
                 });
-                this.base.getView().addDependent(this._oGuidancePdfViewer);
             }
 
-            this._oGuidancePdfViewer.setTitle(
-                oSource.citationTooltip ||
-                this.base.getView().getModel("i18n").getResourceBundle().getText("equipmentManual")
+            try {
+                const oDialog = await this._pEvidenceDialog;
+
+                if (!oDialog.isOpen()) {
+                    const pAfterOpen = new Promise(resolve =>
+                        oDialog.attachEventOnce("afterOpen", resolve)
+                    );
+                    oDialog.open();
+                    await pAfterOpen;
+                }
+
+                await this._disposeEvidenceDocument();
+
+                const oResponse = await fetch(sDocumentUrl, {
+                    credentials: "same-origin",
+                    headers: {Accept: "application/pdf"},
+                    signal: this._oEvidenceAbortController.signal
+                });
+
+                if (!oResponse.ok) {
+                    throw new Error("Manual request failed with status " + oResponse.status);
+                }
+
+                const aPdfBytes = new Uint8Array(await oResponse.arrayBuffer());
+
+                if (iRequestID !== this._iEvidenceRequestID) {
+                    return;
+                }
+
+                const oPdfJs = await this._loadPdfJs();
+
+                this._oEvidenceLoadingTask = oPdfJs.getDocument({data: aPdfBytes});
+                this._oEvidenceDocument = await this._oEvidenceLoadingTask.promise;
+
+                if (iRequestID !== this._iEvidenceRequestID) {
+                    return;
+                }
+
+                const iTotalPages = this._oEvidenceDocument.numPages;
+                const iCitedPage = Math.min(Math.max(iPageNumber, 1), iTotalPages);
+
+                oEvidenceModel.setProperty("/currentPage", iCitedPage);
+                oEvidenceModel.setProperty("/citedPage", iCitedPage);
+                oEvidenceModel.setProperty("/totalPages", iTotalPages);
+                await this._renderEvidencePage();
+            } catch (oError) {
+                if (oError?.name !== "AbortError" &&
+                    iRequestID === this._iEvidenceRequestID) {
+                    Log.error("Unable to display the cited manual passage", oError?.message);
+                    oEvidenceModel.setProperty("/error", oBundle.getText("evidenceLoadError"));
+                }
+            } finally {
+                if (iRequestID === this._iEvidenceRequestID) {
+                    oEvidenceModel.setProperty("/busy", false);
+                }
+            }
+        },
+
+        _renderEvidencePage: async function () {
+            const oView = this.base.getView();
+            const oEvidenceModel = oView.getModel("evidence");
+            const oBundle = oView.getModel("i18n").getResourceBundle();
+            const iCurrentPage = oEvidenceModel.getProperty("/currentPage");
+            const iTotalPages = oEvidenceModel.getProperty("/totalPages");
+            const iCitedPage = oEvidenceModel.getProperty("/citedPage");
+            const fZoom = oEvidenceModel.getProperty("/zoom");
+            const oPage = await this._oEvidenceDocument.getPage(iCurrentPage);
+            const oHtmlControl = oView.byId("evidencePdfHost");
+            const oHtmlDom = oHtmlControl?.getDomRef();
+            const oPageHost = oHtmlDom?.matches(".evidencePageHost")
+                ? oHtmlDom
+                : oHtmlDom?.querySelector(".evidencePageHost");
+            const oScrollContainer = oView.byId("evidenceScroll");
+            const oScrollDom = oScrollContainer?.getDomRef();
+
+            if (!oPageHost || !oScrollDom) {
+                throw new Error("The evidence viewer is not ready");
+            }
+
+            this._oEvidenceRenderTask?.cancel();
+
+            const oBaseViewport = oPage.getViewport({scale: 1});
+            const iAvailableWidth = Math.max(320, oScrollDom.clientWidth - 32);
+            const fFitScale = iAvailableWidth / oBaseViewport.width;
+            const oViewport = oPage.getViewport({scale: fFitScale * fZoom});
+            const fPixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+            const oCanvas = document.createElement("canvas");
+            const oHighlightLayer = document.createElement("div");
+            const oContext = oCanvas.getContext("2d", {alpha: false});
+
+            oPageHost.replaceChildren();
+            oPageHost.style.width = oViewport.width + "px";
+            oPageHost.style.height = oViewport.height + "px";
+
+            oCanvas.className = "evidencePageCanvas";
+            oCanvas.width = Math.floor(oViewport.width * fPixelRatio);
+            oCanvas.height = Math.floor(oViewport.height * fPixelRatio);
+            oCanvas.style.width = oViewport.width + "px";
+            oCanvas.style.height = oViewport.height + "px";
+
+            oHighlightLayer.className = "evidenceHighlightLayer";
+            oPageHost.append(oCanvas, oHighlightLayer);
+
+            this._oEvidenceRenderTask = oPage.render({
+                canvasContext: oContext,
+                viewport: oViewport,
+                transform: fPixelRatio === 1
+                    ? null
+                    : [fPixelRatio, 0, 0, fPixelRatio, 0, 0]
+            });
+            await this._oEvidenceRenderTask.promise;
+
+            let bHighlightFound = false;
+            let fFirstHighlightTop = 0;
+
+            if (iCurrentPage === iCitedPage && oEvidenceModel.getProperty("/excerpt")) {
+                const oTextContent = await oPage.getTextContent();
+                const aPageTokens = [];
+
+                oTextContent.items.forEach((oItem, iItemIndex) => {
+                    const aTokens = (oItem.str || "")
+                        .normalize("NFKC")
+                        .toLocaleLowerCase("en")
+                        .match(/[\p{L}\p{N}]+/gu) || [];
+
+                    aTokens.forEach(sToken => {
+                        aPageTokens.push({token: sToken, itemIndex: iItemIndex});
+                    });
+                });
+
+                const aExcerptTokens = oEvidenceModel.getProperty("/excerpt")
+                    .normalize("NFKC")
+                    .toLocaleLowerCase("en")
+                    .match(/[\p{L}\p{N}]+/gu) || [];
+                let iMatchStart = -1;
+
+                if (aExcerptTokens.length && aExcerptTokens.length <= aPageTokens.length) {
+                    for (let iStart = 0;
+                        iStart <= aPageTokens.length - aExcerptTokens.length;
+                        iStart += 1) {
+                        let bMatches = true;
+
+                        for (let iToken = 0; iToken < aExcerptTokens.length; iToken += 1) {
+                            if (aPageTokens[iStart + iToken].token !== aExcerptTokens[iToken]) {
+                                bMatches = false;
+                                break;
+                            }
+                        }
+
+                        if (bMatches) {
+                            iMatchStart = iStart;
+                            break;
+                        }
+                    }
+                }
+
+                if (iMatchStart >= 0) {
+                    const aMatchedItemIndexes = [
+                        ...new Set(
+                            aPageTokens
+                                .slice(iMatchStart, iMatchStart + aExcerptTokens.length)
+                                .map(oToken => oToken.itemIndex)
+                        )
+                    ];
+
+                    aMatchedItemIndexes.forEach(iItemIndex => {
+                        const oItem = oTextContent.items[iItemIndex];
+                        const aTransform = this._oPdfJs.Util.transform(
+                            oViewport.transform,
+                            oItem.transform
+                        );
+                        const fFontHeight = Math.hypot(aTransform[2], aTransform[3]);
+                        const fLeft = aTransform[4];
+                        const fTop = aTransform[5] - fFontHeight;
+                        const fWidth = Math.max(2, oItem.width * oViewport.scale);
+                        const oHighlight = document.createElement("div");
+
+                        oHighlight.className = "evidencePassageHighlight";
+                        oHighlight.style.left = Math.max(0, fLeft - 1) + "px";
+                        oHighlight.style.top = Math.max(0, fTop - 1) + "px";
+                        oHighlight.style.width = fWidth + 2 + "px";
+                        oHighlight.style.height = fFontHeight + 2 + "px";
+                        oHighlightLayer.appendChild(oHighlight);
+
+                        if (!bHighlightFound || fTop < fFirstHighlightTop) {
+                            fFirstHighlightTop = fTop;
+                        }
+                        bHighlightFound = true;
+                    });
+                }
+            }
+
+            oEvidenceModel.setProperty(
+                "/showExcerptFallback",
+                iCurrentPage === iCitedPage && !bHighlightFound
             );
-            this._oGuidancePdfViewer.setSource(sDocumentUrl);
-            this._oGuidancePdfViewer.open();
+            oEvidenceModel.setProperty("/canPrevious", iCurrentPage > 1);
+            oEvidenceModel.setProperty("/canNext", iCurrentPage < iTotalPages);
+            oEvidenceModel.setProperty("/canZoomOut", fZoom > 0.75);
+            oEvidenceModel.setProperty("/canZoomIn", fZoom < 2);
+            oEvidenceModel.setProperty(
+                "/pageText",
+                oBundle.getText("evidencePageIndicator", [iCurrentPage, iTotalPages])
+            );
+            oEvidenceModel.setProperty(
+                "/zoomText",
+                oBundle.getText("evidenceZoomIndicator", [Math.round(fZoom * 100)])
+            );
+
+            oScrollContainer.scrollTo(
+                0,
+                bHighlightFound ? Math.max(0, fFirstHighlightTop - 72) : 0,
+                0
+            );
+        },
+
+        _showEvidencePage: async function (iPageNumber) {
+            const oEvidenceModel = this.base.getView().getModel("evidence");
+
+            if (!this._oEvidenceDocument ||
+                iPageNumber < 1 ||
+                iPageNumber > this._oEvidenceDocument.numPages) {
+                return;
+            }
+
+            oEvidenceModel.setProperty("/busy", true);
+            oEvidenceModel.setProperty("/error", "");
+            oEvidenceModel.setProperty("/currentPage", iPageNumber);
+
+            try {
+                await this._renderEvidencePage();
+            } catch (oError) {
+                if (oError?.name !== "RenderingCancelledException") {
+                    Log.error("Unable to render the manual page", oError?.message);
+                    oEvidenceModel.setProperty(
+                        "/error",
+                        this.base.getView().getModel("i18n").getResourceBundle()
+                            .getText("evidenceLoadError")
+                    );
+                }
+            } finally {
+                oEvidenceModel.setProperty("/busy", false);
+            }
+        },
+
+        onEvidencePreviousPage: function () {
+            const oEvidenceModel = this.base.getView().getModel("evidence");
+
+            return this._showEvidencePage(
+                oEvidenceModel.getProperty("/currentPage") - 1
+            );
+        },
+
+        onEvidenceNextPage: function () {
+            const oEvidenceModel = this.base.getView().getModel("evidence");
+
+            return this._showEvidencePage(
+                oEvidenceModel.getProperty("/currentPage") + 1
+            );
+        },
+
+        onEvidenceZoomOut: function () {
+            const oEvidenceModel = this.base.getView().getModel("evidence");
+            const fZoom = Math.max(0.75, oEvidenceModel.getProperty("/zoom") - 0.25);
+
+            oEvidenceModel.setProperty("/zoom", fZoom);
+            return this._showEvidencePage(oEvidenceModel.getProperty("/currentPage"));
+        },
+
+        onEvidenceZoomIn: function () {
+            const oEvidenceModel = this.base.getView().getModel("evidence");
+            const fZoom = Math.min(2, oEvidenceModel.getProperty("/zoom") + 0.25);
+
+            oEvidenceModel.setProperty("/zoom", fZoom);
+            return this._showEvidencePage(oEvidenceModel.getProperty("/currentPage"));
+        },
+
+        onCloseEvidenceViewer: function () {
+            this.base.getView().byId("evidenceViewerDialog")?.close();
+        },
+
+        onEvidenceViewerAfterClose: function () {
+            this._iEvidenceRequestID = (this._iEvidenceRequestID || 0) + 1;
+            this._oEvidenceAbortController?.abort();
+            this._oEvidenceAbortController = null;
+            this.base.getView().getModel("evidence").setProperty("/busy", false);
+            this._disposeEvidenceDocument();
+        },
+
+        _disposeEvidenceDocument: async function () {
+            this._oEvidenceRenderTask?.cancel();
+            this._oEvidenceRenderTask = null;
+
+            const oLoadingTask = this._oEvidenceLoadingTask;
+            const oDocument = this._oEvidenceDocument;
+
+            this._oEvidenceLoadingTask = null;
+            this._oEvidenceDocument = null;
+
+            try {
+                if (oLoadingTask) {
+                    await oLoadingTask.destroy();
+                } else if (oDocument) {
+                    await oDocument.destroy();
+                }
+            } catch (oError) {
+                Log.debug("PDF.js cleanup completed with a warning", oError?.message);
+            }
+
+            const oHtmlDom = this.base.getView().byId("evidencePdfHost")?.getDomRef();
+            const oPageHost = oHtmlDom?.matches(".evidencePageHost")
+                ? oHtmlDom
+                : oHtmlDom?.querySelector(".evidencePageHost");
+
+            oPageHost?.replaceChildren();
         },
 
         onDismissError: function () {

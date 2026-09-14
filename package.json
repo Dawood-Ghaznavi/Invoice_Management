@@ -26,6 +26,7 @@
     "undeploy": "cf undeploy Invoice_Management --delete-services --delete-service-keys --delete-service-brokers",
     "hana": "cds deploy --to hana:Invoice_Management-db --auto-undeploy",
     "ingest:breakdown-manual": "node scripts/ingest-mcv200-manual.js",
+    "backfill:breakdown-source-excerpts": "node scripts/backfill-mcv200-source-excerpts.js",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
     "watch-machine_assistant": "cds watch --open machineassistant/index.html?sap-ui-xx-viewCache=false --livereload false"
