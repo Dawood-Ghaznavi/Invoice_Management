@@ -4,7 +4,8 @@
     <VBox class="reportedIssueSection">
         <VBox class="reportedIssuePanel">
             <Label text="{i18n>equipmentSearchLabel}" labelFor="equipmentSearch" required="true" />
-            <Input
+            <HBox alignItems="Center" width="100%" wrap="Wrap" class="equipmentSelectionRow">
+                <Input
                 id="equipmentSearch"
                 value="{reportedIssue>/searchText}"
                 editable="{ui>/isEditable}"
@@ -19,7 +20,10 @@
                 valueStateText="{i18n>equipmentRequiredMessage}"
                 class="equipmentSearch"
                 suggestionRows="{path: '/Equipment', parameters: {$select: 'equipmentID,name,location,model_modelID,isActive', $expand: 'model($select=modelID,name)'}}">
-                <suggestionColumns>
+                    <layoutData>
+                        <FlexItemData growFactor="1" baseSize="0" />
+                    </layoutData>
+                    <suggestionColumns>
                     <Column><Label text="{i18n>equipmentNameColumn}" /></Column>
                     <Column><Label text="{i18n>equipmentIdColumn}" /></Column>
                     <Column><Label text="{i18n>equipmentLocationColumn}" /></Column>
@@ -33,7 +37,19 @@
                         </cells>
                     </ColumnListItem>
                 </suggestionRows>
-            </Input>
+                </Input>
+                <HBox alignItems="Center" justifyContent="End" class="operatingStateContainer">
+                    <layoutData>
+                        <FlexItemData growFactor="0" shrinkFactor="0" baseSize="11.5rem" />
+                    </layoutData>
+                    <ObjectStatus
+                        text="{= %{machineStopped} === true ? %{i18n>operatingStateStopped} : %{machineStopped} === false ? %{i18n>operatingStateRunning} : %{i18n>operatingStateUnknown} }"
+                        state="{= %{machineStopped} === true ? &apos;Error&apos; : %{machineStopped} === false ? &apos;Success&apos; : &apos;None&apos; }"
+                        icon="{= %{machineStopped} === true ? &apos;sap-icon://status-negative&apos; : %{machineStopped} === false ? &apos;sap-icon://status-positive&apos; : &apos;sap-icon://question-mark&apos; }"
+                        inverted="true"
+                        class="operatingStateStatus" />
+                </HBox>
+            </HBox>
 
             <Text
                 text="{= ${reportedIssue>/equipment/equipmentID} + '  ·  ' + ${reportedIssue>/equipment/modelName} + '  ·  ' + ${reportedIssue>/equipment/location} }"
@@ -85,27 +101,6 @@
                 </VBox>
             </HBox>
 
-
-            <VBox class="checksArea">
-                <Button
-                    text="{= %{reportedIssue>/checksExpanded} ? ${i18n>hideChecksButton} : ${i18n>addChecksButton} }"
-                    icon="{= %{reportedIssue>/checksExpanded} ? 'sap-icon://slim-arrow-down' : 'sap-icon://slim-arrow-right' }"
-                    type="Transparent"
-                    press=".extension.machineassistant.ext.controller.ReportedIssue.onToggleChecks"
-                    class="checksToggle" />
-                <VBox visible="{reportedIssue>/checksExpanded}" class="checksContent">
-                    <Label text="{i18n>checksLabel}" labelFor="checksInput" />
-                    <TextArea
-                        id="checksInput"
-                        value="{checksAlreadyPerformed}"
-                        editable="{ui>/isEditable}"
-                        width="100%"
-                        rows="2"
-                        growing="true"
-                        growingMaxLines="4"
-                        placeholder="{i18n>checksPlaceholder}" />
-                </VBox>
-            </VBox>
 
             <MessageStrip
                 text="{reportedIssue>/error}"

@@ -87,6 +87,7 @@ entity BreakdownReports : cuid, managed {
     checksAlreadyPerformed : LargeString;
     machineStopped         : Boolean;
 
+    reportedConcern             : String(220);
     missingInformation          : LargeString;
     suggestedShortDescription   : String(160);
     suggestedDetailedDescription: LargeString;
@@ -106,6 +107,7 @@ entity BreakdownReports : cuid, managed {
 entity GuidanceSources : cuid {
     report          : Association to BreakdownReports;
     manualDocument  : Association to ManualDocuments;
+    @odata.navigable: false
     manualChunk     : Association to ManualChunks;
     pageNumber      : Integer;
     excerpt         : LargeString;

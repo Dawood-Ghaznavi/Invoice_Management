@@ -5,7 +5,7 @@
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
-      "version": "0.0.2"
+      "version": "0.0.7"
     },
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
@@ -62,6 +62,7 @@
       "libs": {
         "sap.m": {},
         "sap.ui.core": {},
+        "sap.ui.layout": {},
         "sap.fe.templates": {}
       }
     },
@@ -94,6 +95,9 @@
       "css": [
         {
           "uri": "css/ReportedIssue.css"
+        },
+        {
+          "uri": "css/Guidance.css"
         }
       ]
     },
@@ -173,6 +177,16 @@
                       "type": "XMLFragment",
                       "template": "machineassistant.ext.ReportedIssue",
                       "title": "Reported Issue"
+                    },
+                    "GuidanceSection": {
+                      "type": "XMLFragment",
+                      "template": "machineassistant.ext.Guidance",
+                      "title": "Guidance & Suggested Report",
+                      "visible": "{= %{guidanceIsCurrent} === true }",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "ReportedIssueSection"
+                      }
                     }
                   }
                 }

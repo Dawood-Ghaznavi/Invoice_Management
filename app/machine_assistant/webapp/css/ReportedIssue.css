@@ -9,8 +9,25 @@
     background: var(--sapGroup_ContentBackground);
 }
 
+.equipmentSelectionRow {
+    gap: 0.75rem;
+    width: 100%;
+}
+
 .equipmentSearch {
     width: 100%;
+    min-width: 14rem;
+}
+
+.operatingStateContainer {
+    flex: 0 0 11.5rem;
+    min-width: 11.5rem;
+    margin-inline-start: auto;
+}
+
+.operatingStateStatus {
+    flex: 0 0 auto;
+    max-width: 100%;
 }
 
 .equipmentMetaLine {
@@ -41,22 +58,6 @@
 
 .issueDetailField {
     min-width: 18rem;
-}
-
-.checksArea {
-    margin-top: 0.25rem;
-}
-
-.checksToggle {
-    align-self: flex-start;
-}
-
-.checksToggle .sapMBtnInner {
-    padding-left: 0;
-}
-
-.checksContent {
-    padding-top: 0.25rem;
 }
 
 .guidanceActionRow {

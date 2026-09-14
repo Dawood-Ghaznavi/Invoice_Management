@@ -18,7 +18,16 @@ service BreakdownService {
     entity ManualDocuments as projection on breakdown.ManualDocuments
         excluding { chunks };
 
+    @cds.api.ignore
+    entity ManualChunks as projection on breakdown.ManualChunks;
+
     entity GuidanceItems as projection on breakdown.GuidanceItems;
-    entity GuidanceSources as projection on breakdown.GuidanceSources
-        excluding { manualChunk };
+    entity GuidanceSources as projection on breakdown.GuidanceSources;
 }
+
+annotate BreakdownService.ManualDocuments with {
+    content  @Core.MediaType                   : mimeType
+             @Core.ContentDisposition.Filename: fileName
+             @Core.ContentDisposition.Type    : 'inline';
+    mimeType @Core.IsMediaType;
+};
