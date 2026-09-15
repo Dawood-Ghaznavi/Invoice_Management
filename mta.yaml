@@ -78,6 +78,10 @@ modules:
       - machineassistant.zip
       name: machineassistant
       target-path: resources/
+    - artifacts:
+      - technicianassistant.zip
+      name: technicianassistant
+      target-path: resources/
 - name: invmanagement
   type: html5
   path: app/invmanagement
@@ -101,6 +105,16 @@ modules:
 - name: machineassistant
   type: html5
   path: app/machine_assistant
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: technicianassistant
+  type: html5
+  path: app/technicianassistant
   build-parameters:
     build-result: dist
     builder: custom

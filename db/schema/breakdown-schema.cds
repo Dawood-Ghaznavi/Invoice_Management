@@ -24,6 +24,19 @@ type GuidanceType : String enum {
     RECOMMENDED_CHECK = 'Recommended Check';
 }
 
+type MaintenanceJobStatus : String enum {
+    ASSIGNED    = 'Assigned';
+    IN_PROGRESS = 'In Progress';
+    ON_HOLD     = 'On Hold';
+}
+
+type MaintenancePriority : String enum {
+    LOW      = 'Low';
+    MEDIUM   = 'Medium';
+    HIGH     = 'High';
+    CRITICAL = 'Critical';
+}
+
 entity EquipmentModels : managed {
     key modelID      : String(40);
         name         : String(120);
@@ -40,6 +53,21 @@ entity Equipment : managed {
         location    : String(160);
         isActive    : Boolean default true;
         isDemoData  : Boolean default true;
+}
+
+@assert.unique.jobNumber: [jobNumber]
+entity MaintenanceJobs : cuid, managed {
+    jobNumber              : String(20) not null;
+    status                 : MaintenanceJobStatus default #ASSIGNED;
+    priority               : MaintenancePriority default #MEDIUM;
+    assignedTechnician     : String(255) not null;
+    equipment              : Association to Equipment not null;
+    reportedAt             : Timestamp;
+    faultCode              : String(40);
+    machineStopped         : Boolean;
+    operatorObservations   : LargeString;
+    checksAlreadyPerformed : LargeString;
+    isDemoData             : Boolean default true;
 }
 
 @assert.unique.documentVersion: [documentNumber, version]

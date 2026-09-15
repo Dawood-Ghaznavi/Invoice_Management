@@ -1,0 +1,1 @@
+using TechnicianAssistantService as service from '../../srv/technician-assistant-service';

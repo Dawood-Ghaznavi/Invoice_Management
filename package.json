@@ -29,7 +29,8 @@
     "backfill:breakdown-source-excerpts": "node scripts/backfill-mcv200-source-excerpts.js",
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
-    "watch-machine_assistant": "cds watch --open machineassistant/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-machine_assistant": "cds watch --open machineassistant/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-technicianassistant": "cds watch --open technicianassistant/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "private": true,
   "cds": {
@@ -94,6 +95,7 @@
   "sapux": [
     "app/invmanagement",
     "app/supplierchat",
-    "app/machine_assistant"
+    "app/machine_assistant",
+    "app/technicianassistant"
   ]
 }
