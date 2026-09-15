@@ -1,0 +1,358 @@
+.technicianAssistantPage,
+.technicianAssistantPage > section,
+.technicianAssistantPage .sapMPageCont {
+    height: 100%;
+}
+
+.technicianAssistantPage .sapMPageCont {
+    overflow: hidden;
+}
+
+.technicianShell {
+    height: 100%;
+    min-height: 0;
+    background: var(--sapGroup_ContentBackground, #fff);
+}
+
+.technicianSidebar {
+    box-sizing: border-box;
+    flex: 0 0 21rem;
+    width: 23%;
+    min-width: 19rem;
+    max-width: 21rem;
+    height: 100%;
+    padding: 1.4rem 1rem 1rem;
+    background: #f7f8fa;
+    border-right: 1px solid #e5e7eb;
+}
+
+.jobRailHeading {
+    flex: 0 0 auto;
+    margin: 0 0.5rem 0.55rem;
+}
+
+.jobRailTitle {
+    color: var(--sapContent_LabelColor, #5f6368);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.jobSearchState {
+    flex: 0 0 auto;
+    margin-bottom: 0.85rem;
+    gap: 0.15rem;
+}
+
+.jobSearchState .sapMInputBaseContentWrapper {
+    border-radius: 0.55rem;
+    background: var(--sapField_Background, #fff);
+}
+
+.cancelJobButton {
+    align-self: flex-end;
+}
+
+.cancelJobButton .sapMBtnInner {
+    min-height: 1.75rem;
+    height: 1.75rem;
+    padding-inline: 0.35rem;
+}
+
+.cancelJobButton .sapMBtnContent {
+    line-height: 1.65rem;
+    font-size: 0.78rem;
+}
+
+.selectedJobList,
+.selectedJobList .sapMListUl {
+    flex: 0 0 auto;
+    background: transparent;
+}
+
+.selectedJobItem {
+    border-radius: 0.65rem;
+    background: #e9eef5;
+}
+
+.selectedJobItem .sapMLIBContent {
+    padding: 0.7rem 0.65rem;
+}
+
+.selectedJobAvatar {
+    box-sizing: border-box;
+    flex: 0 0 auto;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 50%;
+    background: #e8eef8;
+}
+
+.selectedJobWrench {
+    color: #174a7c;
+    font-size: 1.1rem;
+}
+
+.selectedJobText {
+    min-width: 0;
+    margin-inline-start: 0.65rem;
+}
+
+.selectedJobNumber.sapMTitle {
+    color: var(--sapTextColor, #1d2d3e);
+    font-size: 0.95rem;
+}
+
+.selectedJobDescription {
+    max-width: 13rem;
+    margin-top: 0.05rem;
+    color: var(--sapContent_LabelColor, #5b7083);
+    font-size: 0.78rem;
+}
+
+.changeJobIcon {
+    flex: 0 0 auto;
+    margin-inline-start: auto;
+    color: var(--sapContent_IconColor, #5b7083);
+    font-size: 0.75rem;
+}
+
+.jobDetails {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin-top: 1rem;
+    padding: 0 0.5rem 0.5rem;
+    overflow: auto;
+}
+
+.sidebarSectionTitle.sapMTitle {
+    margin-top: 1.1rem;
+    margin-bottom: 0.6rem;
+    color: var(--sapContent_LabelColor, #5f6368);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.035em;
+    text-transform: uppercase;
+}
+
+.jobFacts {
+    gap: 0.55rem;
+}
+
+.jobFactRow {
+    width: 100%;
+    gap: 0.65rem;
+}
+
+.jobFactRow .sapMLabel {
+    flex: 0 0 6.6rem;
+    width: 6.6rem;
+    color: var(--sapContent_LabelColor, #6a6d70);
+    font-size: 0.75rem;
+}
+
+.jobFactRow .sapMText,
+.jobFactRow .sapMObjStatus {
+    min-width: 0;
+    color: var(--sapTextColor, #1d2d3e);
+    font-size: 0.82rem;
+}
+
+.reportedIssueTitle.sapMTitle {
+    margin-top: 1.35rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--sapList_BorderColor, #e5e7eb);
+}
+
+.operatorReportText {
+    color: var(--sapTextColor, #1d2d3e);
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
+.technicianMain {
+    min-width: 0;
+    height: 100%;
+    background: var(--sapGroup_ContentBackground, #fff);
+}
+
+.technicianMainHeader {
+    flex: 0 0 auto;
+    padding: 1.3rem 2rem 1rem;
+    border-bottom: 1px solid var(--sapList_BorderColor, #edf0f2);
+}
+
+.technicianMainTitle.sapMTitle {
+    color: var(--sapTextColor, #1d2d3e);
+    font-size: 1.35rem;
+}
+
+.mainSelectionPrompt,
+.chatEmptyState {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.mainSelectionPrompt {
+    padding: 1.5rem 1.5rem 5rem;
+    gap: 0.45rem;
+}
+
+.mainSelectionPrompt .sapMTitle {
+    color: var(--sapTextColor, #1d2d3e);
+    font-size: 1.65rem;
+}
+
+.mainSelectionPrompt .sapMText {
+    max-width: 33rem;
+    color: var(--sapContent_LabelColor, #5b7083);
+}
+
+.chatEmptyState {
+    padding: 1.5rem 1.5rem 5rem;
+}
+
+.chatEmptyGreeting {
+    margin-bottom: 0.35rem;
+    color: #5b7083;
+    font-size: 1rem;
+    line-height: 1.4rem;
+}
+
+.chatEmptyTitle.sapMTitle {
+    color: var(--sapTextColor, #1d2d3e);
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+}
+
+.chatEmptyContent {
+    max-width: 44rem;
+    margin-top: 1.65rem;
+}
+
+.chatComposer {
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0.4rem 0.45rem 0.4rem 0.75rem;
+    gap: 0.25rem;
+    border: 1px solid #cbd5df;
+    border-radius: 1rem;
+    background: #fff;
+    box-shadow: 0 0.2rem 0.8rem rgba(34, 53, 72, 0.08);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.chatComposer:focus-within {
+    border-color: #5b9bd5;
+    box-shadow: 0 0 0 0.125rem rgba(10, 110, 209, 0.1),
+        0 0.25rem 0.9rem rgba(34, 53, 72, 0.1);
+}
+
+.chatComposer .chatMessageInput .sapMInputBaseContentWrapper,
+.chatComposer .chatMessageInput .sapMTextAreaInner {
+    min-height: 2.5rem;
+    border: 0 !important;
+    outline: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+.chatComposer .chatMessageInput.sapMFocus
+    .sapMInputBaseContentWrapper::before {
+    display: none !important;
+    content: none !important;
+}
+
+.chatMessageInput textarea {
+    padding: 0.6rem 0.25rem 0.55rem;
+    line-height: 1.4;
+}
+
+.chatComposer .sapMTextArea {
+    min-width: 0;
+}
+
+.chatSendButton {
+    flex: 0 0 auto;
+    align-self: center;
+    height: 2.5rem;
+    padding: 0;
+    margin-left: 0.15rem;
+    transform: translateY(-6.5px);
+}
+
+.chatSendButton .sapMBtnInner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border-radius: 0.75rem;
+}
+
+.chatSendButton .sapMBtnIcon {
+    margin: 0;
+    line-height: normal;
+}
+
+.suggestionRow {
+    width: 100%;
+    margin-top: 0.75rem;
+    gap: 0.5rem;
+}
+
+.suggestionButton .sapMBtnInner {
+    min-height: 2.25rem;
+    height: auto;
+    padding: 0 0.8rem;
+    border: 1px solid var(--sapButton_BorderColor, #d9dfe5);
+    border-radius: 0.65rem;
+    background: var(--sapButton_Background, #f8fafc);
+    color: var(--sapLinkColor, #174a7c);
+}
+
+.suggestionButton .sapMBtnContent {
+    line-height: 2.15rem;
+    font-size: 0.85rem;
+}
+
+@media (max-width: 800px) {
+    .technicianShell {
+        flex-direction: column;
+        overflow: auto;
+    }
+
+    .technicianSidebar {
+        flex: 0 0 auto;
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+        height: auto;
+        max-height: none;
+        border-right: 0;
+        border-bottom: 1px solid var(--sapGroup_ContentBorderColor, #e5e7eb);
+    }
+
+    .jobDetails {
+        overflow: visible;
+    }
+
+    .technicianMain {
+        flex: 0 0 35rem;
+        min-height: 35rem;
+    }
+
+    .technicianMainHeader {
+        padding: 1rem;
+    }
+
+    .chatEmptyState {
+        padding-inline: 1rem;
+    }
+}
