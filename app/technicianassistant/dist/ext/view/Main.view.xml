@@ -117,20 +117,150 @@
                     <VBox
                         visible="{view>/hasSelection}"
                         fitContainer="true"
-                        alignItems="Center"
-                        justifyContent="Center"
                         renderType="Bare"
-                        class="chatEmptyState">
-                        <Text
-                            text="{path: 'assignedTechnician', formatter: '.formatTechnicianGreeting'}"
-                            visible="{= !!${assignedTechnician} }"
-                            class="chatEmptyGreeting" />
-                        <Title text="{i18n>chatEmptyTitle}" level="H2" class="chatEmptyTitle" />
+                        class="technicianChatArea">
+                        <layoutData>
+                            <FlexItemData growFactor="1" shrinkFactor="1" baseSize="0%" />
+                        </layoutData>
 
-                        <VBox width="100%" renderType="Bare" class="chatEmptyContent">
+                        <VBox
+                            visible="{= !${view>/hasMessages} }"
+                            fitContainer="true"
+                            alignItems="Center"
+                            justifyContent="Center"
+                            renderType="Bare"
+                            class="chatEmptyState">
+                            <Text
+                                text="{path: 'assignedTechnician', formatter: '.formatTechnicianGreeting'}"
+                                visible="{= !!${assignedTechnician} }"
+                                class="chatEmptyGreeting" />
+                            <Title text="{i18n>chatEmptyTitle}" level="H2" class="chatEmptyTitle" />
+
+                            <VBox width="100%" renderType="Bare" class="chatEmptyContent">
+                                <HBox alignItems="End" renderType="Bare" class="chatComposer">
+                                    <TextArea
+                                        id="emptyMessageInput"
+                                        value="{view>/activeConversation/draft}"
+                                        valueLiveUpdate="true"
+                                        enabled="{= !${view>/activeConversation/isLoading} }"
+                                        growing="true"
+                                        growingMaxLines="4"
+                                        rows="1"
+                                        width="100%"
+                                        class="chatMessageInput"
+                                        placeholder="{i18n>composerPlaceholder}">
+                                        <layoutData>
+                                            <FlexItemData growFactor="1" shrinkFactor="1" baseSize="0%" />
+                                        </layoutData>
+                                    </TextArea>
+                                    <Button
+                                        icon="sap-icon://paper-plane"
+                                        type="Emphasized"
+                                        press=".onSend"
+                                        enabled="{= !!${view>/activeConversation/draft} &amp;&amp; !${view>/activeConversation/isLoading} }"
+                                        tooltip="{i18n>sendButtonTooltip}"
+                                        class="chatSendButton" />
+                                </HBox>
+
+                                <FlexBox wrap="Wrap" justifyContent="Center" alignItems="Center" renderType="Bare" class="suggestionRow">
+                                    <Button text="{path: 'faultCode', formatter: '.formatFaultPrompt'}" type="Transparent" press=".onSuggestionPress" class="suggestionButton" />
+                                    <Button text="{i18n>checksPrompt}" type="Transparent" press=".onSuggestionPress" class="suggestionButton" />
+                                    <Button text="{i18n>safetyPrompt}" type="Transparent" press=".onSuggestionPress" class="suggestionButton" />
+                                </FlexBox>
+                            </VBox>
+                        </VBox>
+
+                        <ScrollContainer
+                            id="messageScroller"
+                            visible="{view>/hasMessages}"
+                            width="100%"
+                            height="100%"
+                            horizontal="false"
+                            vertical="true"
+                            class="chatMessageScroller">
+                            <layoutData>
+                                <FlexItemData growFactor="1" shrinkFactor="1" baseSize="0%" />
+                            </layoutData>
+
+                            <VBox width="100%" renderType="Bare" class="chatConversationColumn">
+                                <List
+                                    items="{view>/activeConversation/messages}"
+                                    visible="{view>/hasMessages}"
+                                    showNoData="false"
+                                    showSeparators="None"
+                                    class="chatMessageList">
+                                    <CustomListItem class="chatMessageItem">
+                                        <VBox renderType="Bare">
+                                            <HBox
+                                                visible="{= ${view>role} === 'user' }"
+                                                justifyContent="End"
+                                                renderType="Bare"
+                                                class="chatUserMessageRow">
+                                                <VBox renderType="Bare" class="chatUserMessage">
+                                                    <Text text="{view>text}" renderWhitespace="true" wrapping="true" />
+                                                </VBox>
+                                            </HBox>
+
+                                            <HBox
+                                                visible="{= ${view>role} === 'assistant' }"
+                                                alignItems="Start"
+                                                renderType="Bare"
+                                                class="chatAssistantMessageRow">
+                                                <Avatar
+                                                    displaySize="XS"
+                                                    fallbackIcon="sap-icon://discussion-2"
+                                                    class="chatAssistantAvatar" />
+                                                <VBox width="100%" renderType="Bare" class="chatAssistantMessage">
+                                                    <layoutData>
+                                                        <FlexItemData growFactor="1" shrinkFactor="1" />
+                                                    </layoutData>
+                                                    <BusyIndicator
+                                                        visible="{= !!${view>loading} }"
+                                                        size="1rem"
+                                                        class="chatMessageBusy" />
+                                                    <Text
+                                                        visible="{= !${view>loading} &amp;&amp; !${view>error} }"
+                                                        text="{view>text}"
+                                                        renderWhitespace="true"
+                                                        wrapping="true"
+                                                        class="chatAssistantText" />
+                                                    <ObjectStatus
+                                                        visible="{= !${view>loading} &amp;&amp; !!${view>error} }"
+                                                        text="{view>text}"
+                                                        state="Error"
+                                                        icon="sap-icon://message-error"
+                                                        class="chatMessageError" />
+                                                    <FlexBox
+                                                        items="{view>citations}"
+                                                        visible="{= ${view>citations}.length > 0 }"
+                                                        wrap="Wrap"
+                                                        alignItems="Center"
+                                                        renderType="Bare"
+                                                        class="chatCitations">
+                                                        <Link
+                                                            text="{path: 'view>pageNumber', formatter: '.formatCitationLabel'}"
+                                                            tooltip="{parts: [{path: 'view>manualTitle'}, {path: 'view>manualVersion'}], formatter: '.formatCitationTooltip'}"
+                                                            press=".onOpenCitation"
+                                                            class="chatCitationLink" />
+                                                    </FlexBox>
+                                                </VBox>
+                                            </HBox>
+                                        </VBox>
+                                    </CustomListItem>
+                                </List>
+                            </VBox>
+                        </ScrollContainer>
+
+                        <VBox
+                            visible="{view>/hasMessages}"
+                            renderType="Bare"
+                            class="chatInputDock">
                             <HBox alignItems="End" renderType="Bare" class="chatComposer">
                                 <TextArea
-                                    value="{view>/draftMessage}"
+                                    id="messageInput"
+                                    value="{view>/activeConversation/draft}"
+                                    valueLiveUpdate="true"
+                                    enabled="{= !${view>/activeConversation/isLoading} }"
                                     growing="true"
                                     growingMaxLines="4"
                                     rows="1"
@@ -144,15 +274,11 @@
                                 <Button
                                     icon="sap-icon://paper-plane"
                                     type="Emphasized"
+                                    press=".onSend"
+                                    enabled="{= !!${view>/activeConversation/draft} &amp;&amp; !${view>/activeConversation/isLoading} }"
                                     tooltip="{i18n>sendButtonTooltip}"
                                     class="chatSendButton" />
                             </HBox>
-
-                            <FlexBox wrap="Wrap" justifyContent="Center" alignItems="Center" renderType="Bare" class="suggestionRow">
-                                <Button text="{path: 'faultCode', formatter: '.formatFaultPrompt'}" type="Transparent" press=".onSuggestionPress" class="suggestionButton" />
-                                <Button text="{i18n>checksPrompt}" type="Transparent" press=".onSuggestionPress" class="suggestionButton" />
-                                <Button text="{i18n>safetyPrompt}" type="Transparent" press=".onSuggestionPress" class="suggestionButton" />
-                            </FlexBox>
                         </VBox>
                     </VBox>
                 </VBox>

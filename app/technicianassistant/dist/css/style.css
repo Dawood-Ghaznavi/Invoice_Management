@@ -188,6 +188,36 @@
     font-size: 1.35rem;
 }
 
+.technicianChatArea {
+    flex: 1 1 auto;
+    min-height: 0;
+    width: 100%;
+}
+
+.chatMessageScroller {
+    flex: 1 1 auto;
+    min-height: 0;
+}
+
+.chatConversationColumn {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 54rem;
+    min-height: 100%;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 1rem;
+}
+
+.chatInputDock {
+    flex: 0 0 auto;
+    padding: 0.6rem 1.5rem 1.25rem;
+    background: #fff;
+}
+
+.chatInputDock .chatComposer {
+    max-width: 54rem;
+}
+
 .mainSelectionPrompt,
 .chatEmptyState {
     flex: 1 1 auto;
@@ -231,6 +261,83 @@
 .chatEmptyContent {
     max-width: 44rem;
     margin-top: 1.65rem;
+}
+
+.chatMessageList,
+.chatMessageList .sapMListUl {
+    background: transparent;
+}
+
+.chatMessageItem {
+    border: 0;
+    background: transparent;
+}
+
+.chatMessageItem .sapMLIBContent {
+    padding: 0;
+}
+
+.chatUserMessageRow,
+.chatAssistantMessageRow {
+    width: 100%;
+    margin-bottom: 1.35rem;
+}
+
+.chatMessageItem:last-child .chatUserMessageRow,
+.chatMessageItem:last-child .chatAssistantMessageRow {
+    margin-bottom: 0.5rem;
+}
+
+.chatUserMessage {
+    max-width: 72%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem 1rem 0.25rem 1rem;
+    background: #eef3f8;
+    color: #1d2d3e;
+}
+
+.chatAssistantMessageRow {
+    gap: 0.75rem;
+}
+
+.chatAssistantAvatar {
+    flex: 0 0 auto;
+    margin-top: 0.1rem;
+    background: #e8eef8;
+    color: #174a7c;
+}
+
+.chatAssistantMessage {
+    min-width: 0;
+    padding-top: 0.35rem;
+    color: #1d2d3e;
+    line-height: 1.55;
+}
+
+.chatAssistantText {
+    display: block;
+    max-width: 78%;
+}
+
+.chatMessageBusy {
+    margin-top: 0.15rem;
+}
+
+.chatMessageError {
+    max-width: 78%;
+}
+
+.chatCitations {
+    margin-top: 0.65rem;
+    gap: 0.55rem;
+}
+
+.chatCitationLink {
+    padding: 0.2rem 0.55rem;
+    border: 1px solid #d9e2ec;
+    border-radius: 0.6rem;
+    background: #f7f9fb;
+    font-size: 0.8rem;
 }
 
 .chatComposer {
@@ -352,7 +459,22 @@
         padding: 1rem;
     }
 
+    .chatConversationColumn {
+        padding: 1.5rem 1rem 0.75rem;
+    }
+
+    .chatInputDock {
+        padding-right: 1rem;
+        padding-left: 1rem;
+    }
+
     .chatEmptyState {
         padding-inline: 1rem;
+    }
+
+    .chatUserMessage,
+    .chatAssistantText,
+    .chatMessageError {
+        max-width: 88%;
     }
 }

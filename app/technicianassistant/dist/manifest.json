@@ -10,7 +10,7 @@
 			]
 		},
 		"applicationVersion": {
-			"version": "0.0.9"
+			"version": "0.0.12"
 		},
 		"title": "{{appTitle}}",
 		"description": "{{appDescription}}",
@@ -61,6 +61,9 @@
 		}
 	},
 	"sap.ui5": {
+		"resourceRoots": {
+			"pdfjs-dist": "./resources/pdfjs-dist"
+		},
 		"flexEnabled": true,
 		"dependencies": {
 			"minUI5Version": "1.152.0",
@@ -107,6 +110,9 @@
 			"css": [
 				{
 					"uri": "css/style.css"
+				},
+				{
+					"uri": "css/EvidenceViewer.css"
 				}
 			]
 		},
