@@ -5,7 +5,7 @@
     "type": "application",
     "i18n": "i18n/i18n.properties",
     "applicationVersion": {
-      "version": "0.0.13"
+      "version": "0.0.28"
     },
     "title": "{{appTitle}}",
     "description": "{{appDescription}}",
@@ -57,7 +57,8 @@
   },
   "sap.ui5": {
     "resourceRoots": {
-      "pdfjs-dist": "./resources/pdfjs-dist"
+      "pdfjs-dist": "./resources/pdfjs-dist",
+      "node.process": "./resources/node.process"
     },
     "flexEnabled": true,
     "dependencies": {

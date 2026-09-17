@@ -14,9 +14,6 @@ builder:
       afterTask: replaceVersion
       configuration:
         addToNamespace: true
-        includeAssets:
-          pdfjs-dist:
-            - "build/pdf.worker.min.mjs"
     - name: ui5-task-zipper
       afterTask: generateCachebusterInfo
       configuration:

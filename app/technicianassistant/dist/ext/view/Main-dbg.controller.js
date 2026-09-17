@@ -13,6 +13,7 @@ sap.ui.define(
             onInit: function () {
                 PageController.prototype.onInit.apply(this, arguments);
                 this.getView().setModel(new JSONModel({
+                    technicianIdentity: "",
                     selectedJobId: "",
                     activeJobId: "",
                     hasSelection: false,
@@ -52,6 +53,41 @@ sap.ui.define(
                         this,
                         arguments
                     );
+                }
+
+                if (!this._technicianIdentityRequested) {
+                    const model = this.getView().getModel() ||
+                        this.getOwnerComponent().getModel();
+
+                    if (model) {
+                        this._technicianIdentityRequested = true;
+                        const technicianBinding = model.bindList(
+                            "/Jobs",
+                            null,
+                            null,
+                            null,
+                            {$select: "assignedTechnician"}
+                        );
+
+                        technicianBinding.requestContexts(0, 1)
+                            .then(contexts => {
+                                const identity = contexts[0]
+                                    ?.getProperty("assignedTechnician");
+
+                                if (identity) {
+                                    this.getView().getModel("view")
+                                        .setProperty(
+                                            "/technicianIdentity",
+                                            identity
+                                        );
+                                }
+                            })
+                            .catch(error => Log.warning(
+                                "Technician greeting could not be loaded",
+                                error.message
+                            ))
+                            .finally(() => technicianBinding.destroy());
+                    }
                 }
 
                 this._messageInputDelegates =
@@ -142,6 +178,11 @@ sap.ui.define(
                 stateModel.setProperty("/isSelectingJob", false);
                 stateModel.setProperty("/showSelectedJob", true);
                 stateModel.setProperty(
+                    "/technicianIdentity",
+                    selectedItem.getBindingContext()
+                        .getProperty("assignedTechnician")
+                );
+                stateModel.setProperty(
                     "/hasMessages",
                     conversation.messages.length > 0
                 );
@@ -167,14 +208,6 @@ sap.ui.define(
                 stateModel.setProperty("/selectedJobId", stateModel.getProperty("/activeJobId"));
                 stateModel.setProperty("/isSelectingJob", false);
                 stateModel.setProperty("/showSelectedJob", true);
-            },
-
-            onSuggestionPress: function (event) {
-                this.getView().getModel("view").setProperty(
-                    "/activeConversation/draft",
-                    event.getSource().getText()
-                );
-                this.onSend();
             },
 
             onSend: async function () {
@@ -305,17 +338,30 @@ sap.ui.define(
 
             _loadPdfJs: function () {
                 if (!this._pPdfJs) {
+                    sap.ui.loader.config({
+                        paths: {
+                            "node.process": sap.ui.require.toUrl(
+                                "technicianassistant/resources/node.process"
+                            )
+                        }
+                    });
                     this._pPdfJs = new Promise((resolve, reject) => {
                         sap.ui.require([
                             "technicianassistant/ext/util/PdfJs"
                         ], resolve, reject);
                     }).then(pdfJs => {
-                        pdfJs.GlobalWorkerOptions.workerSrc =
+                        const workerPath =
                             sap.ui.require.toUrl(
-                                "technicianassistant/thirdparty/pdfjs-dist/build/pdf.worker.min.mjs"
+                                "technicianassistant/pdfjs-worker/pdf.worker.min.mjs"
                             );
+
+                        pdfJs.GlobalWorkerOptions.workerSrc =
+                            new URL(workerPath, document.baseURI).href;
                         this._oPdfJs = pdfJs;
                         return pdfJs;
+                    });
+                    this._pPdfJs.catch(() => {
+                        this._pPdfJs = null;
                     });
                 }
 
@@ -869,15 +915,14 @@ sap.ui.define(
                 const displayName = firstName
                     ? firstName.charAt(0).toUpperCase() + firstName.slice(1)
                     : "there";
+                const i18nModel =
+                    this.getView().getModel("i18n") ||
+                    this.getOwnerComponent().getModel("i18n");
 
-                return this.getView().getModel("i18n").getResourceBundle()
-                    .getText("chatGreeting", [displayName]);
-            },
-
-            formatFaultPrompt: function (faultCode) {
-                return faultCode
-                    ? "What does " + faultCode + " mean?"
-                    : "What does this fault code mean?";
+                return i18nModel
+                    ? i18nModel.getResourceBundle()
+                        .getText("chatGreeting", [displayName])
+                    : "Hi " + displayName + ",";
             },
 
             _scrollToLatest: function () {

@@ -10,7 +10,7 @@
 			]
 		},
 		"applicationVersion": {
-			"version": "0.0.12"
+			"version": "0.0.25"
 		},
 		"title": "{{appTitle}}",
 		"description": "{{appDescription}}",
@@ -62,7 +62,8 @@
 	},
 	"sap.ui5": {
 		"resourceRoots": {
-			"pdfjs-dist": "./resources/pdfjs-dist"
+			"pdfjs-dist": "./resources/pdfjs-dist",
+			"node.process": "./resources/node.process"
 		},
 		"flexEnabled": true,
 		"dependencies": {

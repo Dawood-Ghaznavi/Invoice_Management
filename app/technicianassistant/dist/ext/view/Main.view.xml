@@ -2,6 +2,7 @@
     xmlns="sap.m"
     xmlns:core="sap.ui.core"
     xmlns:mvc="sap.ui.core.mvc"
+    displayBlock="true"
     controllerName="technicianassistant.ext.view.Main">
     <Page id="Main" showHeader="false" enableScrolling="false" class="technicianAssistantPage">
         <content>
@@ -80,12 +81,6 @@
                                 <Text text="{path: 'faultCode', formatter: '.formatOptionalValue'}" />
                             </HBox>
                             <HBox renderType="Bare" class="jobFactRow">
-                                <Label text="{i18n>operatingStateLabel}" />
-                                <ObjectStatus
-                                    text="{path: 'machineStopped', formatter: '.formatOperatingState'}"
-                                    state="{path: 'machineStopped', formatter: '.formatOperatingStateState'}" />
-                            </HBox>
-                            <HBox renderType="Bare" class="jobFactRow">
                                 <Label text="{i18n>reportedAtLabel}" />
                                 <Text text="{path: 'reportedAt', formatter: '.formatReportedAt'}" wrapping="true" />
                             </HBox>
@@ -110,8 +105,11 @@
                         justifyContent="Center"
                         renderType="Bare"
                         class="mainSelectionPrompt">
-                        <Title text="{i18n>selectJobTitle}" level="H2" />
-                        <Text text="{i18n>selectJobDescription}" textAlign="Center" wrapping="true" />
+                        <Text
+                            text="{path: 'view>/technicianIdentity', formatter: '.formatTechnicianGreeting'}"
+                            visible="{= !!${view>/technicianIdentity} }"
+                            class="chatEmptyGreeting" />
+                        <Title text="{i18n>selectJobTitle}" level="H2" class="chatEmptyTitle" />
                     </VBox>
 
                     <VBox
@@ -161,12 +159,6 @@
                                         tooltip="{i18n>sendButtonTooltip}"
                                         class="chatSendButton" />
                                 </HBox>
-
-                                <FlexBox wrap="Wrap" justifyContent="Center" alignItems="Center" renderType="Bare" class="suggestionRow">
-                                    <Button text="{path: 'faultCode', formatter: '.formatFaultPrompt'}" type="Transparent" press=".onSuggestionPress" class="suggestionButton" />
-                                    <Button text="{i18n>checksPrompt}" type="Transparent" press=".onSuggestionPress" class="suggestionButton" />
-                                    <Button text="{i18n>safetyPrompt}" type="Transparent" press=".onSuggestionPress" class="suggestionButton" />
-                                </FlexBox>
                             </VBox>
                         </VBox>
 
@@ -214,10 +206,14 @@
                                                     <layoutData>
                                                         <FlexItemData growFactor="1" shrinkFactor="1" />
                                                     </layoutData>
-                                                    <BusyIndicator
-                                                        visible="{= !!${view>loading} }"
-                                                        size="1rem"
-                                                        class="chatMessageBusy" />
+                                                    <HBox
+                                                        alignItems="Center"
+                                                        renderType="Bare"
+                                                        visible="{= !!${view>loading} }">
+                                                        <BusyIndicator
+                                                            size="1rem"
+                                                            class="chatMessageBusy" />
+                                                    </HBox>
                                                     <Text
                                                         visible="{= !${view>loading} &amp;&amp; !${view>error} }"
                                                         text="{view>text}"

@@ -73,6 +73,11 @@
 
 .selectedJobItem {
     border-radius: 0.65rem;
+    background: transparent;
+}
+
+.selectedJobItem.sapMLIBHoverable:hover,
+.selectedJobItem.sapMLIBActive {
     background: #e9eef5;
 }
 
@@ -160,7 +165,7 @@
 }
 
 .reportedIssueTitle.sapMTitle {
-    margin-top: 1.35rem;
+    margin-top: 2.75rem;
     padding-top: 1rem;
     border-top: 1px solid var(--sapList_BorderColor, #e5e7eb);
 }
@@ -173,7 +178,9 @@
 
 .technicianMain {
     min-width: 0;
+    min-height: 0;
     height: 100%;
+    overflow: hidden;
     background: var(--sapGroup_ContentBackground, #fff);
 }
 
@@ -192,6 +199,7 @@
     flex: 1 1 auto;
     min-height: 0;
     width: 100%;
+    overflow: hidden;
 }
 
 .chatMessageScroller {
@@ -228,17 +236,6 @@
 
 .mainSelectionPrompt {
     padding: 1.5rem 1.5rem 5rem;
-    gap: 0.45rem;
-}
-
-.mainSelectionPrompt .sapMTitle {
-    color: var(--sapTextColor, #1d2d3e);
-    font-size: 1.65rem;
-}
-
-.mainSelectionPrompt .sapMText {
-    max-width: 33rem;
-    color: var(--sapContent_LabelColor, #5b7083);
 }
 
 .chatEmptyState {
@@ -406,27 +403,6 @@
 .chatSendButton .sapMBtnIcon {
     margin: 0;
     line-height: normal;
-}
-
-.suggestionRow {
-    width: 100%;
-    margin-top: 0.75rem;
-    gap: 0.5rem;
-}
-
-.suggestionButton .sapMBtnInner {
-    min-height: 2.25rem;
-    height: auto;
-    padding: 0 0.8rem;
-    border: 1px solid var(--sapButton_BorderColor, #d9dfe5);
-    border-radius: 0.65rem;
-    background: var(--sapButton_Background, #f8fafc);
-    color: var(--sapLinkColor, #174a7c);
-}
-
-.suggestionButton .sapMBtnContent {
-    line-height: 2.15rem;
-    font-size: 0.85rem;
 }
 
 @media (max-width: 800px) {
