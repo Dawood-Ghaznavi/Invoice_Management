@@ -1,0 +1,19 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    core:require="{Formatter: 'customerforcast/ext/formatter'}">
+    <HBox
+        width="100%"
+        justifyContent="End"
+        alignItems="Center">
+        <ObjectStatus
+            text="{i18n>notPredicted}"
+            state="None"
+            visible="{path: 'predictedVisitors', formatter: 'Formatter.isPredictionMissing'}" />
+        <Text
+            text="{predictedVisitors}"
+            textAlign="End"
+            width="100%"
+            visible="{path: 'predictedVisitors', formatter: 'Formatter.hasPrediction'}" />
+    </HBox>
+</core:FragmentDefinition>

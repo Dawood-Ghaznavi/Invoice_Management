@@ -10,7 +10,7 @@
 			]
 		},
 		"applicationVersion": {
-			"version": "0.0.3"
+			"version": "0.0.6"
 		},
 		"title": "{{appTitle}}",
 		"description": "{{appDescription}}",
@@ -91,7 +91,11 @@
 			}
 		},
 		"resources": {
-			"css": []
+			"css": [
+				{
+					"uri": "css/prediction-dialog.css"
+				}
+			]
 		},
 		"extends": {
 			"extensions": {
@@ -136,6 +140,23 @@
 								"@com.sap.vocabularies.UI.v1.LineItem": {
 									"tableSettings": {
 										"type": "ResponsiveTable"
+									},
+									"columns": {
+										"PredictedVisitors": {
+											"header": "{i18n>predictionPredicted}",
+											"width": "12rem",
+											"importance": "High",
+											"horizontalAlign": "End",
+											"position": {
+												"placement": "After",
+												"anchor": "DataField::reservedVisitors"
+											},
+											"template": "customerforcast.ext.PredictedVisitorsColumn",
+											"availability": "Default",
+											"properties": [
+												"predictedVisitors"
+											]
+										}
 									},
 									"actions": {
 										"PredictVisitors": {

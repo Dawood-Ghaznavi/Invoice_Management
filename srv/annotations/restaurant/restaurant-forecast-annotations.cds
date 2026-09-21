@@ -5,10 +5,10 @@ using RestaurantForecastService as service from '../../restaurant-forecast-servi
 // =============================================================================
 
 annotate service.VisitorHistory with {
-    visitDate        @(title: 'Visit Date');
+    visitDate        @(title: 'Date');
     restaurantID     @(title: 'Restaurant ID');
-    dayOfWeek        @(title: 'Day of Week');
-    holiday          @(title: 'Holiday');
+    dayOfWeek        @(title: 'Day');
+    holiday          @(title: 'Is Holiday?');
     reservedVisitors @(title: 'Reserved Visitors');
     actualVisitors   @(title: 'Actual Visitors');
     predictedVisitors @(title: 'Predicted Visitors');
@@ -21,45 +21,33 @@ annotate service.VisitorHistory with {
 annotate service.VisitorHistory with @(
     UI.SelectionFields: [
         visitDate,
-        restaurantID,
         dayOfWeek,
         holiday
     ],
     UI.LineItem       : [
         {
             $Type         : 'UI.DataField',
+            Label         : 'Date',
             Value         : visitDate,
             @UI.Importance: #High
         },
         {
             $Type         : 'UI.DataField',
+            Label         : 'Day',
             Value         : dayOfWeek,
             @UI.Importance: #High
         },
         {
             $Type         : 'UI.DataField',
-            Value         : reservedVisitors,
-            @UI.Importance: #High
-        },
-        {
-            $Type         : 'UI.DataField',
-            Value         : predictedVisitors,
-            @UI.Importance: #High
-        },
-        {
-            $Type         : 'UI.DataField',
-            Value         : actualVisitors,
-            @UI.Importance: #High
-        },
-        {
-            $Type         : 'UI.DataField',
+            Label         : 'Is Holiday?',
             Value         : holiday,
             @UI.Importance: #Medium
         },
         {
             $Type         : 'UI.DataField',
-            Value         : restaurantID,
-            @UI.Importance: #Low
+            Label         : 'Reserved Visitors',
+            Value         : reservedVisitors,
+            @UI.Importance: #High
         }
     ],
     UI.PresentationVariant: {

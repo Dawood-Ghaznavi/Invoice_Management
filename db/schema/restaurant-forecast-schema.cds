@@ -6,14 +6,14 @@ namespace restaurantforecast;
  */
 entity VisitorHistory {
     key visitDate        : Date
-                           @title: 'Visit Date';
+                           @title: 'Date';
     key restaurantID     : String(40)
                            @title: 'Restaurant ID';
 
         dayOfWeek        : String(10) not null
-                           @title: 'Day of Week';
+                           @title: 'Day';
         holiday          : Boolean not null default false
-                           @title: 'Holiday';
+                           @title: 'Is Holiday?';
         reservedVisitors : Integer not null default 0
                            @title: 'Reserved Visitors';
         actualVisitors   : Integer not null

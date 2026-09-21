@@ -97,7 +97,7 @@ sap.ui.define([
                 try {
                     action.setParameter("fromDate", fromDate);
                     action.setParameter("toDate", toDate);
-                    await action.execute();
+                    await action.execute("$direct");
 
                     const response =
                         action.getBoundContext().getObject();
@@ -107,8 +107,8 @@ sap.ui.define([
                     predictionModel.setProperty(
                         "/contextSummary",
                         this._getText("predictionContextSummary", [
-                            response.contextRecordCount,
-                            results.length
+                            results.length,
+                            response.contextRecordCount
                         ])
                     );
                     predictionModel.setProperty(
@@ -151,7 +151,7 @@ sap.ui.define([
                             };
                         })
                     );
-                    await action.execute();
+                    await action.execute("$direct");
 
                     MessageToast.show(
                         this._getText("predictionSaved", [

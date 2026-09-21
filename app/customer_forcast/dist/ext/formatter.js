@@ -1,0 +1,2 @@
+sap.ui.define([],function(){"use strict";return{isPredictionMissing:function(n){return n===null||n===undefined},hasPrediction:function(n){return n!==null&&n!==undefined}}});
+//# sourceMappingURL=formatter.js.map

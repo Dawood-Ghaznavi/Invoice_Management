@@ -1,0 +1,24 @@
+.customerForecastPredictionContent {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 1rem 1.5rem 0.75rem;
+}
+
+.customerForecastPredictionFilters {
+    gap: 1rem;
+}
+
+.customerForecastPredictionSummary {
+    color: var(--sapContent_LabelColor);
+    font-size: var(--sapFontSmallSize);
+}
+
+@media (max-width: 600px) {
+    .customerForecastPredictionContent {
+        padding: 1rem;
+    }
+
+    .customerForecastPredictionFilters {
+        gap: 0.5rem;
+    }
+}
