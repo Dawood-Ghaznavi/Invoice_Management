@@ -1,0 +1,119 @@
+<core:FragmentDefinition
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core">
+    <Dialog
+        id="predictionDialog"
+        title="{i18n>predictionDialogTitle}"
+        contentWidth="62rem"
+        contentHeight="34rem"
+        stretchOnPhone="true"
+        busy="{prediction>/busy}"
+        busyIndicatorDelay="0">
+        <content>
+            <VBox class="sapUiContentPadding sapUiSmallMarginBottom">
+                <MessageStrip
+                    text="{i18n>predictionIntro}"
+                    type="Information"
+                    showIcon="true"
+                    class="sapUiSmallMarginBottom" />
+
+                <HBox
+                    wrap="Wrap"
+                    alignItems="End"
+                    class="sapUiSmallMarginBottom">
+                    <VBox class="sapUiSmallMarginEnd sapUiTinyMarginBottom">
+                        <Label
+                            text="{i18n>predictionFromDate}"
+                            labelFor="predictionFromDate" />
+                        <DatePicker
+                            id="predictionFromDate"
+                            value="{prediction>/fromDate}"
+                            valueFormat="yyyy-MM-dd"
+                            displayFormat="medium"
+                            initialFocusedDateValue="{prediction>/calendarFocusDate}"
+                            width="14rem" />
+                    </VBox>
+                    <VBox class="sapUiTinyMarginBottom">
+                        <Label
+                            text="{i18n>predictionToDate}"
+                            labelFor="predictionToDate" />
+                        <DatePicker
+                            id="predictionToDate"
+                            value="{prediction>/toDate}"
+                            valueFormat="yyyy-MM-dd"
+                            displayFormat="medium"
+                            initialFocusedDateValue="{prediction>/calendarFocusDate}"
+                            width="14rem" />
+                    </VBox>
+                </HBox>
+
+                <Text
+                    text="{prediction>/contextSummary}"
+                    visible="{prediction>/hasResults}"
+                    class="sapUiTinyMarginBottom" />
+
+                <Table
+                    id="predictionResultsTable"
+                    visible="{prediction>/hasResults}"
+                    items="{prediction>/results}"
+                    fixedLayout="true"
+                    growing="true"
+                    growingThreshold="12">
+                    <columns>
+                        <Column>
+                            <Text text="{i18n>predictionDate}" />
+                        </Column>
+                        <Column>
+                            <Text text="{i18n>predictionDay}" />
+                        </Column>
+                        <Column hAlign="End">
+                            <Text text="{i18n>predictionPredicted}" />
+                        </Column>
+                        <Column hAlign="End">
+                            <Text text="{i18n>predictionActual}" />
+                        </Column>
+                        <Column hAlign="End">
+                            <Text text="{i18n>predictionAccuracy}" />
+                        </Column>
+                    </columns>
+                    <items>
+                        <ColumnListItem>
+                            <cells>
+                                <Text text="{prediction>visitDate}" />
+                                <Text text="{prediction>dayOfWeek}" />
+                                <ObjectNumber
+                                    number="{prediction>predictedVisitors}" />
+                                <ObjectNumber
+                                    number="{prediction>actualVisitors}" />
+                                <ObjectStatus
+                                    text="{
+                                        path: 'prediction>accuracy',
+                                        formatter: '.formatAccuracy'
+                                    }"
+                                    state="{
+                                        path: 'prediction>accuracy',
+                                        formatter: '.formatAccuracyState'
+                                    }" />
+                            </cells>
+                        </ColumnListItem>
+                    </items>
+                </Table>
+            </VBox>
+        </content>
+        <beginButton>
+            <Button
+                text="{i18n>predictionClose}"
+                press=".onClosePredictionDialog" />
+        </beginButton>
+        <buttons>
+            <Button
+                text="{i18n>predictionRun}"
+                press=".onRunPrediction" />
+            <Button
+                text="{i18n>predictionSaveAndClose}"
+                type="Emphasized"
+                enabled="{prediction>/hasResults}"
+                press=".onSavePredictions" />
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

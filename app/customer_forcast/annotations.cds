@@ -1,0 +1,1 @@
+using RestaurantForecastService as service from '../../srv/restaurant-forecast-service';

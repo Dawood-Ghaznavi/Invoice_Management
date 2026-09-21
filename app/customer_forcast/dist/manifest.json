@@ -1,0 +1,180 @@
+{
+	"_version": "1.89.0",
+	"sap.app": {
+		"id": "customerforcast",
+		"type": "application",
+		"i18n": {
+			"bundleUrl": "i18n/i18n.properties",
+			"supportedLocales": [
+				""
+			]
+		},
+		"applicationVersion": {
+			"version": "0.0.3"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"resources": "resources.json",
+		"sourceTemplate": {
+			"id": "@sap/generator-fiori:lrop",
+			"version": "1.32.0",
+			"toolsId": "86503035-335c-489d-b2c6-f65854c1d0b6"
+		},
+		"dataSources": {
+			"mainService": {
+				"uri": "/restaurant-forecast/",
+				"type": "OData",
+				"settings": {
+					"annotations": [],
+					"odataVersion": "4.0"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		}
+	},
+	"sap.ui5": {
+		"flexEnabled": true,
+		"dependencies": {
+			"minUI5Version": "1.152.0",
+			"libs": {
+				"sap.m": {},
+				"sap.ui.core": {},
+				"sap.fe.templates": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "customerforcast.i18n.i18n",
+					"supportedLocales": [
+						""
+					]
+				}
+			},
+			"": {
+				"dataSource": "mainService",
+				"preload": true,
+				"settings": {
+					"operationMode": "Server",
+					"autoExpandSelect": true,
+					"earlyRequests": true
+				}
+			},
+			"@i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"uri": "i18n/i18n.properties",
+				"settings": {
+					"supportedLocales": [
+						""
+					]
+				}
+			}
+		},
+		"resources": {
+			"css": []
+		},
+		"extends": {
+			"extensions": {
+				"sap.ui.controllerExtensions": {
+					"sap.fe.templates.ListReport.ListReportController": {
+						"controllerName": "customerforcast.ext.controller.ListReportExt"
+					}
+				}
+			}
+		},
+		"routing": {
+			"config": {},
+			"routes": [
+				{
+					"pattern": ":?query:",
+					"name": "VisitorHistoryList",
+					"target": "VisitorHistoryList"
+				},
+				{
+					"pattern": "VisitorHistory({key}):?query:",
+					"name": "VisitorHistoryObjectPage",
+					"target": "VisitorHistoryObjectPage"
+				}
+			],
+			"targets": {
+				"VisitorHistoryList": {
+					"type": "Component",
+					"id": "VisitorHistoryList",
+					"name": "sap.fe.templates.ListReport",
+					"options": {
+						"settings": {
+							"contextPath": "/VisitorHistory",
+							"variantManagement": "Page",
+							"navigation": {
+								"VisitorHistory": {
+									"detail": {
+										"route": "VisitorHistoryObjectPage"
+									}
+								}
+							},
+							"controlConfiguration": {
+								"@com.sap.vocabularies.UI.v1.LineItem": {
+									"tableSettings": {
+										"type": "ResponsiveTable"
+									},
+									"actions": {
+										"PredictVisitors": {
+											"text": "{i18n>predictVisitorsAction}",
+											"press": ".extension.customerforcast.ext.controller.ListReportExt.onOpenPredictionDialog",
+											"requiresSelection": false
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				"VisitorHistoryObjectPage": {
+					"type": "Component",
+					"id": "VisitorHistoryObjectPage",
+					"name": "sap.fe.templates.ObjectPage",
+					"options": {
+						"settings": {
+							"editableHeaderContent": false,
+							"contextPath": "/VisitorHistory"
+						}
+					}
+				}
+			}
+		},
+		"flexBundle": false
+	},
+	"sap.fiori": {
+		"registrationIds": [],
+		"archeType": "transactional"
+	},
+	"sap.fe": {
+		"app": {
+			"enableLazyLoading": true
+		}
+	},
+	"sap.cloud": {
+		"public": true,
+		"service": "intinv"
+	}
+}

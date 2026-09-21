@@ -82,6 +82,10 @@ modules:
       - technicianassistant.zip
       name: technicianassistant
       target-path: resources/
+    - artifacts:
+      - customerforcast.zip
+      name: customerforcast
+      target-path: resources/
 - name: invmanagement
   type: html5
   path: app/invmanagement
@@ -115,6 +119,16 @@ modules:
 - name: technicianassistant
   type: html5
   path: app/technicianassistant
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: customerforcast
+  type: html5
+  path: app/customer_forcast
   build-parameters:
     build-result: dist
     builder: custom
